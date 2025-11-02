@@ -1,0 +1,70 @@
+<!-- views/login.ejs -->
+<section class="auth">
+  <h1>로그인</h1>
+
+  <form id="loginForm" autocomplete="on">
+    <label for="username">아이디</label>
+    <input id="username" name="username" required />
+
+    <label for="password">비밀번호</label>
+    <input id="password" name="password" type="password" required />
+
+    <button id="loginBtn" type="submit">로그인</button>
+  </form>
+
+  <p class="muted">계정이 없나요? <a href="/register">회원가입</a></p>
+  <p id="loginError" class="error" style="display:none;"></p>
+</section>
+
+<script>
+  (function () {
+    const form = document.getElementById('loginForm');
+    const btn = document.getElementById('loginBtn');
+    const err = document.getElementById('loginError');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      err.style.display = 'none';
+      btn.disabled = true; btn.textContent = '로그인 중...';
+
+      const body = {
+        username: form.username.value.trim(),
+        password: form.password.value
+      };
+
+      try {
+        // 백엔드가 쿠키(JWT)를 세팅해준다고 가정
+        const res = await fetch('/api/users/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+          let msg = '로그인에 실패했습니다.';
+          try { const j = await res.json(); if (j?.message) msg = j.message; } catch {}
+          throw new Error(msg);
+        }
+
+        // 성공 시 홈으로
+        location.href = '/';
+      } catch (e) {
+        err.textContent = e.message || '오류가 발생했습니다.';
+        err.style.display = 'block';
+      } finally {
+        btn.disabled = false; btn.textContent = '로그인';
+      }
+    });
+  })();
+</script>
+
+<style>
+.auth{max-width:420px;margin:32px auto;background:#fff;border:1px solid #eee;border-radius:12px;padding:20px}
+.auth h1{margin:0 0 12px}
+.auth form{display:grid;gap:10px}
+.auth input{padding:10px;border:1px solid #ddd;border-radius:8px}
+.auth button{padding:10px;border-radius:8px;background:#111;color:#fff;border:0;cursor:pointer}
+.auth .muted{margin-top:10px;color:#666}
+.error{margin-top:10px;color:#c33}
+</style>

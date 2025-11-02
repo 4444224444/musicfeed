@@ -1,0 +1,30 @@
+<header class="nav">
+  <a class="brand" href="/">NowPlaying</a>
+
+  <nav class="menu">
+    <!-- 현재 주소를 JS로 감지해서 active 적용 -->
+    <a href="/login">Login</a>
+    <a href="/friends">Friends</a>
+    <a href="/feed">Feed</a>
+    <a href="/recent">Recent</a>
+    <a href="/me">My Page</a>
+  </nav>
+</header>
+
+<script>
+  // 브라우저에서 현재 경로에 따라 active 클래스 적용
+  const currentPath = location.pathname;
+  document.querySelectorAll('.menu a').forEach(a => {
+    if (a.getAttribute('href') === currentPath) {
+      a.classList.add('active');
+    }
+  });
+</script>
+
+<style>
+.nav{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eee;background:#fff;position:sticky;top:0;z-index:10}
+.brand{font-weight:700;color:#111;text-decoration:none;margin-right:12px}
+.menu a{margin:0 8px;text-decoration:none;color:#555}
+.menu a.active{color:#111;font-weight:700;border-bottom:2px solid #111;padding-bottom:2px}
+</style>
+

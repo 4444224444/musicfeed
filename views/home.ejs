@@ -1,0 +1,84 @@
+<section class="home">
+  <% if (!user) { %>
+    <div class="placeholder">
+      <h2>로그인 후 Spotify를 연동해 보세요 🎧</h2>
+      <div class="actions">
+        <a class="btn" href="/login">Login</a>
+        <a class="btn ghost" href="/register">Sign up</a>
+      </div>
+    </div>
+
+  <% } else if (!user.linkedSpotify) { %>
+    <div class="placeholder">
+      <h2>@<%= user.username %> 님, Spotify 연동이 필요해요 🎶</h2>
+      <p class="muted">연동하면 현재 재생 중인 곡이 자동으로 표시됩니다.</p>
+      <a class="btn" href="/api/spotify/login">Spotify 연동하러 가기</a>
+    </div>
+
+  <% } else { %>
+    <div id="np-empty" class="placeholder">
+      <h2>현재 재생 중인 곡이 없습니다</h2>
+      <p class="muted">음악이 시작되면 여기에서 바로 보여드릴게요.</p>
+    </div>
+
+    <script>
+      (function () {
+        async function refresh() {
+          try {
+            const res = await fetch('/api/spotify/current', { credentials: 'include' });
+            if (!res.ok) return;
+            const d = await res.json();
+
+            const container = document.querySelector('.home');
+
+            if (!d || !d.trackName || d.is_playing === false) {
+              const empty = document.getElementById('np-empty');
+              if (!empty && container) {
+                container.insertAdjacentHTML('afterbegin', `
+                  <div id="np-empty" class="placeholder">
+                    <h2>현재 재생 중인 곡이 없습니다</h2>
+                    <p class="muted">음악이 시작되면 여기에서 바로 보여드릴게요.</p>
+                  </div>
+                `);
+              }
+              return;
+            }
+
+            const html = `
+              <div id="np" class="now-playing">
+                <img class="cover" src="${d.albumCover || ''}" alt="album cover" />
+                <div class="meta">
+                  <h2>${d.trackName}</h2>
+                  <p>${d.artist || ''}</p>
+                  <small class="muted">업데이트: ${new Date().toLocaleTimeString('ko-KR')}</small>
+                </div>
+              </div>`;
+            const empty = document.getElementById('np-empty');
+            if (empty) empty.outerHTML = html;
+            else {
+              const np = document.getElementById('np');
+              if (np) np.outerHTML = html; else if (container) container.insertAdjacentHTML('afterbegin', html);
+            }
+          } catch (e) { /* ignore */ }
+        }
+
+        // 페이지 로드 즉시 1회 + 주기 폴링
+        refresh();
+        setInterval(refresh, 15000);
+      })();
+    </script>
+  <% } %>
+</section>
+
+<style>
+.home{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center}
+.placeholder{padding:32px 24px;border:1px dashed #ddd;border-radius:16px;background:#fff}
+.actions{margin-top:12px;display:flex;gap:8px;justify-content:center}
+.btn{display:inline-block;padding:10px 16px;border-radius:8px;background:#111;color:#fff;text-decoration:none}
+.btn.ghost{background:transparent;border:1px solid #111;color:#111}
+.muted{color:#777}
+.now-playing{display:flex;flex-direction:column;align-items:center;gap:14px}
+.cover{width:240px;height:240px;object-fit:cover;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.meta h2{margin:0 0 6px}
+.meta p{margin:0}
+</style>

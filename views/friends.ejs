@@ -1,0 +1,204 @@
+<section class="friends">
+  <h1>친구 관리</h1>
+
+  <% if (!user) { %>
+    <p>로그인 후 이용할 수 있습니다.</p>
+    <a class="btn" href="/login">로그인하기</a>
+  <% } else { %>
+
+  <!-- 🔍 친구 검색 -->
+  <div class="search-box">
+    <input id="searchInput" type="text" placeholder="친구 이름을 입력하세요" />
+    <button id="searchBtn" class="btn">검색</button>
+  </div>
+
+  <!-- 검색 결과 -->
+  <div id="searchResults" class="results"></div>
+
+  <hr />
+
+  <!-- 👥 내 친구 목록 -->
+  <h2>내 친구 목록</h2>
+  <ul id="friendsList" class="friends-list"></ul>
+
+  <% } %>
+</section>
+
+<script>
+  const searchBtn = document.getElementById('searchBtn');
+  const searchInput = document.getElementById('searchInput');
+  const searchResults = document.getElementById('searchResults');
+  const friendsList = document.getElementById('friendsList');
+
+  let myFriends = []; // 현재 내 친구 목록을 저장 (검색 시 버튼 토글용)
+
+  // ✅ 내 친구 목록 불러오기
+  async function loadFriends() {
+    try {
+      const res = await fetch('/api/friends', { credentials: 'include' });
+      if (!res.ok) throw new Error('친구 목록 로드 실패');
+      const data = await res.json();
+      myFriends = data;
+
+      if (!data.length) {
+        friendsList.innerHTML = '<li class="muted">아직 친구가 없습니다.</li>';
+        return;
+      }
+
+      friendsList.innerHTML = data
+        .map(
+          f => `
+          <li class="friend-item">
+            <span>@${f.username}</span>
+            <button class="btn ghost" onclick="removeFriend('${f._id}')">삭제</button>
+          </li>
+        `
+        )
+        .join('');
+    } catch (err) {
+      console.error(err);
+      friendsList.innerHTML = '<li class="muted">불러오기에 실패했습니다.</li>';
+    }
+  }
+
+  // ✅ 친구 검색
+  async function searchUsers() {
+    const keyword = searchInput.value.trim();
+    if (!keyword) return alert('이름을 입력하세요!');
+    searchResults.innerHTML = '<p class="muted">검색 중...</p>';
+    try {
+      const res = await fetch(`/api/friends/search?username=${encodeURIComponent(keyword)}`, {
+        credentials: 'include'
+      });
+      if (!res.ok) throw new Error('검색 실패');
+      const users = await res.json();
+
+      if (!users.length) {
+        searchResults.innerHTML = '<p class="muted">검색 결과가 없습니다.</p>';
+        return;
+      }
+
+      // 🔄 이미 친구인지 판단
+      searchResults.innerHTML = users
+        .map(u => {
+          const isFriend = myFriends.some(f => f._id === u._id);
+          return `
+            <div class="user-item">
+              <span>@${u.username}</span>
+              ${
+                isFriend
+                  ? `<button class="btn ghost" onclick="removeFriend('${u._id}')">삭제</button>`
+                  : `<button class="btn" onclick="addFriend('${u._id}')">추가</button>`
+              }
+            </div>
+          `;
+        })
+        .join('');
+    } catch (err) {
+      searchResults.innerHTML = '<p class="muted">검색 중 오류 발생</p>';
+    }
+  }
+
+  // ✅ 친구 추가
+  async function addFriend(friendId) {
+    try {
+      const res = await fetch('/api/friends/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ friendId }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('친구가 추가되었습니다!');
+        loadFriends();
+        searchUsers();
+      } else {
+        alert(data.message || '추가 실패');
+      }
+    } catch {
+      alert('오류가 발생했습니다.');
+    }
+  }
+
+  // ✅ 친구 삭제
+  async function removeFriend(friendId) {
+    if (!confirm('정말 이 친구를 삭제하시겠습니까?')) return;
+    try {
+      const res = await fetch('/api/friends/remove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ friendId }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('친구가 삭제되었습니다.');
+        loadFriends();
+        searchUsers();
+      } else {
+        alert(data.message || '삭제 실패');
+      }
+    } catch {
+      alert('오류가 발생했습니다.');
+    }
+  }
+
+  // 이벤트
+  searchBtn.addEventListener('click', searchUsers);
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') searchUsers();
+  });
+
+  // 페이지 진입 시 내 친구 목록 불러오기
+  loadFriends();
+</script>
+
+<style>
+.friends {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+.search-box {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+.results {
+  margin-top: 10px;
+}
+.user-item, .friend-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  margin: 6px 0;
+}
+.friends-list {
+  list-style: none;
+  padding: 0;
+}
+.friends-list li {
+  margin: 4px 0;
+}
+.btn {
+  padding: 6px 10px;
+  background: #111;
+  color: #fff;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+.btn.ghost {
+  background: transparent;
+  border: 1px solid #111;
+  color: #111;
+}
+.muted {
+  color: #777;
+}
+</style>

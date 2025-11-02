@@ -1,0 +1,143 @@
+<section class="recent">
+  <h1>내 최근 재생</h1>
+
+  <% if (!user) { %>
+    <div class="placeholder">
+      <p>최근 재생 내역을 보려면 로그인하세요.</p>
+      <a class="btn" href="/login">로그인하기</a>
+    </div>
+  <% } else { %>
+    <div id="status" class="muted"></div>
+
+    <div class="toolbar">
+      <button id="refreshBtn" class="btn">새로고침</button>
+      <span id="count" class="muted"></span>
+    </div>
+
+    <ul id="list" class="track-list"></ul>
+  <% } %>
+</section>
+
+<script>
+  (function () {
+    const listEl = document.getElementById('list');
+    const statusEl = document.getElementById('status');
+    const countEl = document.getElementById('count');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    if (!listEl) return; // 비로그인 상태
+
+    function timeAgo(ts) {
+      const d = new Date(ts);
+      const diff = Date.now() - d.getTime();
+      const sec = Math.floor(diff / 1000);
+      if (sec < 60) return `${sec}초 전`;
+      const min = Math.floor(sec / 60);
+      if (min < 60) return `${min}분 전`;
+      const hr = Math.floor(min / 60);
+      if (hr < 24) return `${hr}시간 전`;
+      const day = Math.floor(hr / 24);
+      return `${day}일 전`;
+    }
+
+    function msToMinSec(ms) {
+      const total = Math.round(ms / 1000);
+      const m = Math.floor(total / 60);
+      const s = String(total % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function render(items) {
+      if (!items || !items.length) {
+        listEl.innerHTML = `
+          <li class="empty muted">
+            최근 재생 내역이 비어있습니다.
+          </li>`;
+        countEl.textContent = '';
+        return;
+      }
+
+      // Spotify recently-played 원본을 화면용으로 맵핑
+      const html = items.map((it) => {
+        // 컨트롤러에서 원본 그대로 주는 경우 대비 (Spotify 원형)
+        const track = it.track || it.item || it; // 안전하게
+        const name = track.name || '';
+        const artists = Array.isArray(track.artists) ? track.artists.map(a => a.name).join(', ') : '';
+        const cover = track.album?.images?.[1]?.url || track.album?.images?.[0]?.url || '';
+        const playedAt = it.played_at || it.playedAt || it.timestamp || track.played_at;
+        const duration = track.duration_ms ? msToMinSec(track.duration_ms) : '';
+        const externalUrl = track.external_urls?.spotify || (track.id ? `https://open.spotify.com/track/${track.id}` : '#');
+
+        return `
+          <li class="track">
+            <img class="cover" src="${cover}" alt="cover" />
+            <div class="meta">
+              <div class="title">${name}</div>
+              <div class="artist muted">${artists}</div>
+              <div class="sub muted">
+                <span>${playedAt ? timeAgo(playedAt) : ''}</span>
+                ${duration ? `<span> · ${duration}</span>` : ''}
+              </div>
+            </div>
+            <a class="btn ghost small" href="${externalUrl}" target="_blank" rel="noopener">열기</a>
+          </li>
+        `;
+      }).join('');
+
+      listEl.innerHTML = html;
+      countEl.textContent = `${items.length}곡`;
+    }
+
+    async function load() {
+      statusEl.textContent = '불러오는 중…';
+      listEl.innerHTML = '';
+      countEl.textContent = '';
+      try {
+        const res = await fetch('/api/spotify/recent', { credentials: 'include' });
+        if (res.status === 401) {
+          statusEl.innerHTML = `로그인이 필요합니다. <a href="/login">로그인</a>`;
+          return;
+        }
+        const data = await res.json();
+
+        // 컨트롤러가 그대로 Spotify 형식(items 배열) 반환한다고 가정
+        // (네 컨트롤러: getRecentTracks → `response.data.items || []`)
+        let items = Array.isArray(data) ? data : (data.items || []);
+        // 최신 순 정렬(played_at 내림차순)
+        items = items.sort((a, b) => new Date(b.played_at || b.playedAt || 0) - new Date(a.played_at || a.playedAt || 0));
+
+        render(items);
+        statusEl.textContent = '완료';
+        setTimeout(() => (statusEl.textContent = ''), 800);
+      } catch (e) {
+        statusEl.innerHTML = '불러오는 중 오류가 발생했습니다.';
+        listEl.innerHTML = `
+          <li class="empty muted">잠시 후 다시 시도해 주세요.</li>
+        `;
+      }
+    }
+
+    refreshBtn?.addEventListener('click', load);
+
+    // 진입 즉시 로드
+    load();
+  })();
+</script>
+
+<style>
+.recent { max-width: 780px; margin: 0 auto; }
+.placeholder{padding:24px;border:1px dashed #ddd;border-radius:12px;background:#fff;text-align:center}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin:12px 0}
+.track-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.track{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #eee;border-radius:10px;background:#fff}
+.cover{width:56px;height:56px;border-radius:8px;object-fit:cover}
+.meta{flex:1;min-width:0}
+.title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.artist{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{font-size:12px}
+.btn{display:inline-block;padding:8px 12px;border-radius:8px;background:#111;color:#fff;text-decoration:none;border:0;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid #111;color:#111}
+.btn.small{padding:6px 10px;font-size:12px}
+.muted{color:#777}
+.empty{padding:16px;text-align:center}
+</style>

@@ -1,0 +1,45 @@
+<section class="me">
+  <h1>My Page</h1>
+
+  <div class="card">
+    <div>아이디: <strong>@<%= me.username %></strong></div>
+    <div>가입일: <%= new Date(me.createdAt).toLocaleDateString('ko-KR') %></div>
+
+    <div style="margin-top:12px;">
+      <div>Spotify 연동:
+        <% if (me.linkedSpotify) { %>
+          <span class="ok">연동됨</span>
+          <form method="post" action="/api/spotify/unlink" style="display:inline">
+            <button type="submit" class="btn ghost">연동 해제</button>
+          </form>
+        <% } else { %>
+          <span class="no">미연동</span>
+          <a class="btn" href="/api/spotify/login">연동하러 가기</a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <form id="logoutForm" method="post" action="/api/users/logout" style="margin-top:16px">
+    <button type="submit" class="btn danger">로그아웃</button>
+  </form>
+
+  <p id="logoutMsg" class="muted" style="display:none;margin-top:8px;">로그아웃되었습니다. 잠시 후 로그인 페이지로 이동합니다…</p>
+</section>
+
+<script>
+  (function () {
+    const form = document.getElementById('logoutForm');
+    const msg  = document.getElementById('logoutMsg');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try {
+        const res = await fetch('/api/users/logout', { method: 'POST', credentials: 'include' });
+        if (res.ok) {
+          msg.style.display = 'block';
+          setTimeout(() => location.href = '/login', 500);
+        }
+      } catch {}
+    });
+  })();
+</script>

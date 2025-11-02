@@ -1,0 +1,206 @@
+<section class="feed">
+  <h1>친구 피드</h1>
+
+  <% if (!user) { %>
+    <div class="placeholder">
+      <p>친구들의 음악 활동을 보려면 로그인하세요.</p>
+      <a class="btn" href="/login">로그인하기</a>
+    </div>
+  <% } else { %>
+
+    <div class="toolbar">
+      <div class="left">
+        <button id="refreshBtn" class="btn">새로고침</button>
+        <button id="autoBtn" class="btn ghost">자동 새로고침: 꺼짐</button>
+      </div>
+      <div class="right">
+        <input id="q" class="search" type="text" placeholder="곡/아티스트/친구 검색…" />
+      </div>
+    </div>
+
+    <ul id="list" class="feed-list"></ul>
+    <p id="status" class="muted"></p>
+
+  <% } %>
+</section>
+
+<script>
+(function(){
+  var listEl = document.getElementById('list');
+  var statusEl = document.getElementById('status');
+  var refreshBtn = document.getElementById('refreshBtn');
+  var autoBtn = document.getElementById('autoBtn');
+  var qInput = document.getElementById('q');
+
+  var fullData = [];
+  var auto = false;
+  var autoTimer = null;
+
+  if (!listEl) return; // 비로그인
+
+  // recent와 동일한 방식의 단순 커버 추출
+  function coverFromTrack(track) {
+    var album = (track && track.album) ? track.album : null;
+    var images = album && album.images ? album.images : null;
+    if (images && images.length) {
+      // recent에서처럼 중간(1) 우선 → 없으면 첫(0)
+      return (images[1] && images[1].url) || (images[0] && images[0].url) || null;
+    }
+    // 혹시 track.images 형태가 들어오는 경우
+    if (track && track.images && track.images.length) {
+      return track.images[0].url || null;
+    }
+    return null;
+  }
+
+  function timeAgo(ts) {
+    var d = new Date(ts);
+    var diff = Date.now() - d.getTime();
+    var s = Math.floor(diff / 1000);
+    if (s < 60) return s + '초 전';
+    var m = Math.floor(s / 60);
+    if (m < 60) return m + '분 전';
+    var h = Math.floor(m / 60);
+    if (h < 24) return h + '시간 전';
+    var day = Math.floor(h / 24);
+    return day + '일 전';
+  }
+
+  // recent와 최대한 비슷하게 정규화
+  function normalizeItem(it){
+    var user = it.user || it.friend || {};
+    var username = user.username || user.name || it.username || 'unknown';
+
+    var track = it.track || it.item || null; // feed가 무엇을 쓰든 track 우선
+    var trackName = track && track.name ? track.name : (it.trackName || '제목 없음');
+
+    var artistsArr = (track && Array.isArray(track.artists))
+      ? track.artists.map(function(a){ return a.name; })
+      : (it.artists ? [].concat(it.artists) : []);
+    var artist = artistsArr.join(', ');
+
+    // recent와 동일 우선순위
+    var cover = coverFromTrack(track) || it.albumCover || it.cover || null;
+
+    var playedAt = it.played_at || it.playedAt || it.timestamp || Date.now();
+
+    var url = (track && track.external_urls && track.external_urls.spotify)
+              || (track && track.id ? ('https://open.spotify.com/track/' + track.id) : '#');
+
+    return { username: username, trackName: trackName, artist: artist, cover: cover, playedAt: playedAt, url: url };
+  }
+
+  function render(items){
+    var q = (qInput && qInput.value ? qInput.value : '').trim().toLowerCase();
+    var filtered = items.filter(function(x){
+      var hay = (x.username + ' ' + x.trackName + ' ' + x.artist).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+
+    if (!filtered.length) {
+      listEl.innerHTML = '<li class="empty muted">표시할 항목이 없습니다.</li>';
+      statusEl.textContent = '';
+      return;
+    }
+
+    var FALLBACK_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56">' +
+        '<rect width="100%" height="100%" fill="#f1f1f1"/>' +
+        '<circle cx="28" cy="28" r="12" fill="#bbb"/>' +
+      '</svg>'
+    );
+
+    var html = '';
+    for (var i=0; i<filtered.length; i++) {
+      var x = filtered[i];
+      var src = x.cover || FALLBACK_SVG;
+      html += ''
+        + '<li class="feed-item">'
+        +   '<img class="cover" src="' + src + '" alt="cover" '
+        +        'onerror="this.onerror=null;this.src=\'' + FALLBACK_SVG + '\'" />'
+        +   '<div class="meta">'
+        +     '<div class="who">@' + x.username + '</div>'
+        +     '<div class="what">'
+        +       '<span class="title">' + x.trackName + '</span>'
+        +       '<span class="artist muted"> — ' + (x.artist || '') + '</span>'
+        +     '</div>'
+        +     '<div class="when muted">' + timeAgo(x.playedAt) + '</div>'
+        +   '</div>'
+        +   '<a class="btn ghost small" href="' + x.url + '" target="_blank" rel="noopener">열기</a>'
+        + '</li>';
+    }
+
+    listEl.innerHTML = html;
+    statusEl.textContent = filtered.length + '개 항목';
+  }
+
+  async function load(){
+    try {
+      statusEl.textContent = '불러오는 중…';
+      listEl.innerHTML = '';
+      var res = await fetch('/api/feed', { credentials: 'include' });
+      if (res.status === 401) {
+        listEl.innerHTML = '<li class="empty muted">로그인이 필요합니다. <a href="/login">로그인</a></li>';
+        statusEl.textContent = '';
+        return;
+      }
+      var data = await res.json(); // 배열 가정
+
+      // recent처럼 최신순
+      fullData = (Array.isArray(data) ? data : []).map(normalizeItem)
+        .sort(function(a,b){ return new Date(b.playedAt) - new Date(a.playedAt); });
+
+      render(fullData);
+      statusEl.textContent = '완료';
+      setTimeout(function(){ statusEl.textContent = fullData.length + '개 항목'; }, 500);
+    } catch (e) {
+      console.error(e);
+      listEl.innerHTML = '<li class="empty muted">피드를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</li>';
+      statusEl.textContent = '';
+    }
+  }
+
+  function toggleAuto(){
+    auto = !auto;
+    autoBtn.textContent = '자동 새로고침: ' + (auto ? '켜짐' : '꺼짐');
+    if (auto) {
+      if (autoTimer) clearInterval(autoTimer);
+      autoTimer = setInterval(load, 15000);
+    } else {
+      if (autoTimer) clearInterval(autoTimer);
+      autoTimer = null;
+    }
+  }
+
+  if (refreshBtn) refreshBtn.addEventListener('click', load);
+  if (autoBtn) autoBtn.addEventListener('click', toggleAuto);
+  if (qInput) qInput.addEventListener('input', function(){ render(fullData); });
+
+  // 최초 로드
+  load();
+})();
+</script>
+
+
+<style>
+.feed { max-width: 820px; margin: 0 auto; }
+.placeholder{padding:24px;border:1px dashed #ddd;border-radius:12px;background:#fff;text-align:center}
+
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin:12px 0;gap:8px;flex-wrap:wrap}
+.search{min-width:220px;padding:8px 10px;border:1px solid #ddd;border-radius:8px}
+
+.feed-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.feed-item{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #eee;border-radius:10px;background:#fff}
+.cover{width:56px;height:56px;border-radius:8px;object-fit:cover;background:#f4f4f4}
+.meta{flex:1;min-width:0}
+.who{font-size:14px;color:#333}
+.what{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.title{font-weight:600}
+.artist{color:#777}
+.when{font-size:12px}
+.btn{display:inline-block;padding:8px 12px;border-radius:8px;background:#111;color:#fff;text-decoration:none;border:0;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid #111;color:#111}
+.btn.small{padding:6px 10px;font-size:12px}
+.muted{color:#777}
+.empty{padding:16px;text-align:center}
+</style>
