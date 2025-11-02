@@ -1,0 +1,19 @@
+﻿# Node modules
+node_modules/
+
+# env
+.env
+
+# logs
+*.log
+npm-debug.log*
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# build outputs (혹시 생길 경우 대비)
+dist/
+build/
