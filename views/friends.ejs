@@ -6,7 +6,7 @@
     <a class="btn" href="/login">로그인하기</a>
   <% } else { %>
 
-  <!-- 🔍 친구 검색 -->
+  <!-- 친구 검색 -->
   <div class="search-box">
     <input id="searchInput" type="text" placeholder="친구 이름을 입력하세요" />
     <button id="searchBtn" class="btn">검색</button>
@@ -17,7 +17,7 @@
 
   <hr />
 
-  <!-- 👥 내 친구 목록 -->
+  <!-- 내 친구 목록 -->
   <h2>내 친구 목록</h2>
   <ul id="friendsList" class="friends-list"></ul>
 
@@ -30,9 +30,9 @@
   const searchResults = document.getElementById('searchResults');
   const friendsList = document.getElementById('friendsList');
 
-  let myFriends = []; // 현재 내 친구 목록을 저장 (검색 시 버튼 토글용)
+  let myFriends = []; // 현재 내 친구 목록을 저장 
 
-  // ✅ 내 친구 목록 불러오기
+  // 내 친구 목록 불러오기
   async function loadFriends() {
     try {
       const res = await fetch('/api/friends', { credentials: 'include' });
@@ -61,7 +61,7 @@
     }
   }
 
-  // ✅ 친구 검색
+  //  친구 검색
   async function searchUsers() {
     const keyword = searchInput.value.trim();
     if (!keyword) return alert('이름을 입력하세요!');
@@ -78,7 +78,7 @@
         return;
       }
 
-      // 🔄 이미 친구인지 판단
+      // 이미 친구인지 판단
       searchResults.innerHTML = users
         .map(u => {
           const isFriend = myFriends.some(f => f._id === u._id);
@@ -99,7 +99,7 @@
     }
   }
 
-  // ✅ 친구 추가
+  // 친구 추가
   async function addFriend(friendId) {
     try {
       const res = await fetch('/api/friends/add', {
@@ -121,7 +121,7 @@
     }
   }
 
-  // ✅ 친구 삭제
+  // 친구 삭제
   async function removeFriend(friendId) {
     if (!confirm('정말 이 친구를 삭제하시겠습니까?')) return;
     try {

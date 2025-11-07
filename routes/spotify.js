@@ -18,7 +18,7 @@ router.get('/me', protect, spotifyController.getSpotifyProfile);
 // 현재 재생 (정식 경로)
 router.get('/currently-playing', protect, spotifyController.getCurrentlyPlaying);
 
-// ★ alias들 — 프론트/테스트 편하게
+// 여기 테스트
 router.get('/current', protect, spotifyController.getCurrentlyPlaying);
 router.get('/now', protect, spotifyController.getCurrentlyPlaying);
 

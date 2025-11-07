@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-// 🔥 logout 포함해서 불러오기
+
 const { registerUser, loginUser, getMe, logout } =
   require('../controllers/userController');
 

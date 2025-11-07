@@ -1,0 +1,70 @@
+<!-- views/register.ejs -->
+<section class="auth">
+  <h1>회원가입</h1>
+
+  <form id="registerForm" autocomplete="on">
+    <label for="username">아이디</label>
+    <input id="username" name="username" required />
+
+    <label for="password">비밀번호</label>
+    <input id="password" name="password" type="password" required />
+
+    <button id="registerBtn" type="submit">회원가입</button>
+  </form>
+
+  <p class="muted">이미 계정이 있으신가요? <a href="/login">로그인</a></p>
+  <p id="registerError" class="error" style="display:none;"></p>
+</section>
+
+<script>
+  (function () {
+    const form = document.getElementById('registerForm');
+    const btn  = document.getElementById('registerBtn');
+    const err  = document.getElementById('registerError');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      err.style.display = 'none';
+      btn.disabled = true; btn.textContent = '가입 중...';
+
+      const body = {
+        username: form.username.value.trim(),
+        password: form.password.value
+      };
+
+      try {
+        // 백엔드가 회원 생성(필요 시 쿠키/JWT 세팅)한다고 가정
+        const res = await fetch('/api/users/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) {
+          let msg = '회원가입에 실패했습니다.';
+          try { const j = await res.json(); if (j?.message) msg = j.message; } catch {}
+          throw new Error(msg);
+        }
+
+        // 성공 시 로그인 페이지로
+        location.href = '/login';
+      } catch (e) {
+        err.textContent = e.message || '오류가 발생했습니다.';
+        err.style.display = 'block';
+      } finally {
+        btn.disabled = false; btn.textContent = '회원가입';
+      }
+    });
+  })();
+</script>
+
+<style>
+.auth{max-width:420px;margin:32px auto;background:#fff;border:1px solid #eee;border-radius:12px;padding:20px}
+.auth h1{margin:0 0 12px}
+.auth form{display:grid;gap:10px}
+.auth input{padding:10px;border:1px solid #ddd;border-radius:8px}
+.auth button{padding:10px;border-radius:8px;background:#111;color:#fff;border:0;cursor:pointer}
+.auth .muted{margin-top:10px;color:#666}
+.error{margin-top:10px;color:#c33}
+</style>
