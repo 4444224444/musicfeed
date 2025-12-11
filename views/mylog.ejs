@@ -1,0 +1,99 @@
+
+<link rel="stylesheet" href="/css/mylog.css">
+
+<main
+  id="mylogPage"
+  class="mylog-page"
+  data-viewed-user-id="<%= profileUser._id %>"
+  data-is-me="<%= isMe %>"
+>
+  <% const displayName = profileUser.nickname || profileUser.username; %>
+
+  <!-- 상단 프로필 영역 -->
+  <header class="mylog-header">
+    <div class="mylog-profile-box">
+      <div class="mylog-profile-name"><%= displayName %></div>
+      <div class="mylog-profile-sub">
+        <% if (isMe) { %>
+          나의 음악 기록을 남기는 공간이다.
+        <% } else { %>
+          <%= displayName %>의 음악 기록을 구경하는 중이다.
+        <% } %>
+      </div>
+    </div>
+
+    <% if (isMe) { %>
+      <button id="openComposeBtn" class="mylog-compose-toggle">
+        새 기록 쓰기
+      </button>
+    <% } %>
+  </header>
+
+  <!-- 기록 리스트 -->
+  <section class="mylog-list-section">
+    <h2 class="mylog-list-title">기록 목록</h2>
+    <ul id="mylogList"></ul>
+  </section>
+
+  <% if (isMe) { %>
+    <!-- 바텀시트 작성 패널 -->
+    <section class="mylog-compose" id="mylogCompose">
+      <div class="mylog-compose-inner">
+        <div class="compose-header">
+          <h2>새 기록 남기기</h2>
+          <button type="button" id="closeComposeBtn" class="close-btn">닫기</button>
+        </div>
+
+        <!-- 제목 -->
+        <div class="form-row">
+          <input
+            id="title"
+            type="text"
+            placeholder="기록의 제목을 입력해 달라."
+          />
+        </div>
+
+        <!-- 곡 검색 -->
+        <div class="search-row">
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="곡 제목, 아티스트로 검색해 달라."
+          />
+          <button id="searchBtn" type="button">검색</button>
+        </div>
+        <p id="searchStatus" class="mylog-msg"></p>
+        <ul id="searchResults" class="mylog-search-results"></ul>
+
+        <!-- 선택된 곡 -->
+        <div id="selectedTrackBox" class="selected-track">
+          <div class="selected-track-inner">
+            <img id="selCover" alt="" />
+            <div>
+              <div id="selTitle"></div>
+              <div id="selArtist"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 감상 텍스트 -->
+        <div class="form-row">
+          <textarea
+            id="content"
+            rows="4"
+            placeholder="오늘 이 곡은 어땠는지 적어보자."
+          ></textarea>
+        </div>
+
+        <div class="form-row form-actions">
+          <button id="saveBtn" type="button" class="btn-primary">
+            기록 남기기
+          </button>
+          <span id="saveStatus" class="mylog-msg"></span>
+        </div>
+      </div>
+    </section>
+  <% } %>
+</main>
+
+<script src="/js/mylog.js"></script>

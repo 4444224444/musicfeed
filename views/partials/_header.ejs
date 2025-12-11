@@ -1,30 +1,116 @@
 <header class="nav">
-  <a class="brand" href="/">NowPlaying</a>
+    <a class="brand" href="/">N.P</a>
 
-  <nav class="menu">
-    <!-- 현재 주소를 JS로 감지해서 active 적용 -->
-    <a href="/login">Login</a>
-    <a href="/friends">Friends</a>
-    <a href="/feed">Feed</a>
-    <a href="/recent">Recent</a>
-    <a href="/me">My Page</a>
-  </nav>
+    <nav class="menu">
+        <% if (user) { %>
+            <a href="/recent">RECENT</a>
+            <a href="/playlists">playlist</a>
+            <a href="/m-log">M-LOG</a>
+            <a href="/setup">SETUP</a>
+        <% } else { %>
+            <a href="/login">LOGIN</a>
+        <% } %>
+    </nav>
+
+    <% if (user) { %>
+        <span class="hello-user"><%= user.nickname %>님 반가워요!</span>
+    <% } %>
 </header>
 
-<script>
-  // 브라우저에서 현재 경로에 따라 active 클래스 적용
-  const currentPath = location.pathname;
-  document.querySelectorAll('.menu a').forEach(a => {
-    if (a.getAttribute('href') === currentPath) {
-      a.classList.add('active');
-    }
-  });
-</script>
-
 <style>
-.nav{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eee;background:#fff;position:sticky;top:0;z-index:10}
-.brand{font-weight:700;color:#111;text-decoration:none;margin-right:12px}
-.menu a{margin:0 8px;text-decoration:none;color:#555}
-.menu a.active{color:#111;font-weight:700;border-bottom:2px solid #111;padding-bottom:2px}
-</style>
 
+/* 헤더 전체에 General Sans 적용 */
+.nav, 
+.nav * {
+    font-family: "General Sans Variable", sans-serif;
+}
+
+/* 헤더 기본 */
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 10px 48px;
+    background: #141414;
+    color: #ffffff;
+    box-sizing: border-box;
+}
+
+/* 왼쪽 로고 (크기 키움) */
+.nav .brand {
+    font-size: 36px;         /* 24px → 28px */
+    font-weight: 800;
+    letter-spacing: 0.02em;  /* 약간만 벌림 */
+    text-decoration: none;
+    color: #ffffff;
+}
+
+/* 가운데 메뉴 */
+.nav .menu {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    gap: 28px;               /* 살짝 줄임 */
+}
+
+/* 메뉴 텍스트: 자간 줄이기 */
+.nav .menu a {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.05em;  /* 기존 0.15em → 0.05em */
+    text-transform: uppercase;
+    text-decoration: none;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 4px;
+}
+
+/* 밑줄 기본 상태 (폭 0) */
+.nav .menu a::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background: #ffffff;      /* 기본 밑줄 색 (흰색) */
+    transition: width 0.25s ease;
+}
+
+/* hover 시 밑줄 자연스럽게 펼쳐짐 */
+.nav .menu a:hover::after {
+    width: 100%;
+}
+
+/* active 상태: 파란색 + 항상 표시 */
+.nav .menu a.active {
+    color: #4482ff;
+}
+
+.nav .menu a.active::after {
+    background: #4482ff;
+    width: 100%;
+}
+
+/* 오른쪽 인사말: 크기 키움 */
+.nav .hello-user {
+    margin-left: auto;
+    font-size: 18px;      /* 13px → 14px */
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #f5f5f5;
+}
+
+    </style>
+<script>
+
+    const currentPath = location.pathname.replace(/\/$/, "");
+    document.querySelectorAll('.menu a').forEach(a => {
+        const hrefPath = a.getAttribute('href').replace(/\/$/, "");
+        if (hrefPath === currentPath) {
+            a.classList.add('active');
+        }
+    });
+</script>

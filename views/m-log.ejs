@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="/css/m-log.css">
+
+<main class="mlog-page">
+  <div class="mlog-container">
+    <!-- 왼쪽: 프로필 + 친구 목록 -->
+    <aside class="mlog-sidebar">
+      <!-- 내 프로필 박스 -->
+      <section
+  class="mlog-profile"
+  id="mlog-my-profile"
+  data-user-id="<%= me._id %>"
+>
+  <h2 class="mlog-username"><%= user.nickname || me.username %></h2>
+  <p class="mlog-profile-sub">나의 음악 기록, M-LOG</p>
+</section>
+
+      <!-- 이웃 / 친구 목록 -->
+      <section class="mlog-friends">
+        <div class="mlog-friends-header">
+          <h3>이웃</h3>
+          <a href="/friends" class="mlog-friends-manage">관리</a>
+        </div>
+
+        <% if (friends && friends.length > 0) { %>
+          <ul class="mlog-friends-list">
+            <% friends.forEach(function(friend) { %>
+              <li
+                class="mlog-friend-item"
+                data-user-id="<%= friend._id %>"
+              >
+                <!-- 🔥 이웃도 nickname 우선 -->
+                <span class="mlog-friend-name"><%= friend.nickname || friend.username %></span>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="mlog-friends-empty">아직 추가된 이웃이 없다.</p>
+        <% } %>
+      </section>
+    </aside>
+
+    <!-- 오른쪽: 피드 영역 -->
+    <section class="mlog-feed-area">
+      <header class="mlog-feed-header">
+        <h2>이웃 새글</h2>
+      </header>
+
+      <div id="mlog-feed">
+        <p class="mlog-feed-loading">피드를 불러오는 중...</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="/js/m-log.js"></script>

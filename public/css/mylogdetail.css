@@ -1,0 +1,233 @@
+/* ===========================
+   기본 스타일
+=========================== */
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #141414;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Noto Sans KR", sans-serif;
+}
+
+/* 메인 컨테이너 */
+.mylog-detail-page {
+  max-width: 720px;
+  margin: 60px auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* ===========================
+   헤더(제목/작성자/날짜/트랙)
+=========================== */
+
+#postHeader {
+  margin-bottom: 32px;
+}
+
+#postHeader h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+#postHeader p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #d0d0d0;
+}
+
+/* ===========================
+   본문
+=========================== */
+
+#postBody {
+  background: #1d1d1d;
+  padding: 22px 24px;
+  border-radius: 14px;
+  line-height: 1.6;
+  color: #f7f7f7;
+  font-size: 15px;
+  margin-bottom: 28px;
+  white-space: pre-line;
+}
+
+/* ===========================
+   편집 / 삭제 (내 글일 때)
+=========================== */
+
+#postActions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+#postActions button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.15s ease-in-out;
+}
+
+/* 편집 */
+#editBtn {
+  background: #007aff;
+  color: #fff;
+}
+
+#editBtn:hover {
+  filter: brightness(1.15);
+}
+
+/* 삭제 */
+#deleteBtn {
+  background: transparent;
+  border: 1px solid #ff3b30;
+  color: #ff3b30;
+}
+
+#deleteBtn:hover {
+  background: rgba(255, 59, 48, 0.15);
+}
+
+/* ===========================
+   댓글 영역
+=========================== */
+
+#postComments h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* 댓글 리스트 */
+#commentList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#commentList li {
+  background: #1c1c1c;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #2a2a2a;
+}
+
+#commentList li strong {
+  font-size: 15px;
+}
+
+#commentList li span {
+  color: #8e8e8e;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+#commentList li p {
+  margin: 8px 0 10px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* 댓글 삭제 버튼 */
+button[data-action="delete-comment"] {
+  background: transparent;
+  border: 1px solid #444;
+  color: #bbb;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+button[data-action="delete-comment"]:hover {
+  background: #2a2a2a;
+}
+
+/* ===========================
+   댓글 입력폼
+=========================== */
+
+#commentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#commentInput {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+}
+
+#commentInput:focus {
+  border-color: #007aff;
+}
+
+#commentForm button {
+  background: #007aff;
+  color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.15s ease;
+}
+
+#commentForm button:hover {
+  filter: brightness(1.15);
+}
+
+/* ===========================
+   편집 모드 textarea
+=========================== */
+
+#editContent {
+  width: 100%;
+  background: #1f1f1f;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  resize: none;
+  outline: none;
+}
+
+#editSaveBtn,
+#editCancelBtn {
+  margin-top: 12px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+#editSaveBtn {
+  background: #007aff;
+  color: #fff;
+}
+
+#editCancelBtn {
+  background: #3a3a3a;
+  color: #fff;
+}
+
+#editCancelBtn:hover {
+  background: #4a4a4a;
+}

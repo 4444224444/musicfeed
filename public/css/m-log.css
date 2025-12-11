@@ -1,0 +1,311 @@
+/* 전체 기본 */
+html,
+body {
+  background: #141414;
+  margin: 0;
+  padding: 0;
+  color: #ffffff;
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", system-ui, -apple-system,
+    sans-serif;
+}
+
+/* ===== 페이지 래퍼 ===== */
+.mlog-page {
+  padding: 60px 80px;
+  box-sizing: border-box;
+}
+
+/* 가운데 정렬 + 2열 레이아웃 */
+.mlog-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 40px;
+}
+
+/* ===== 왼쪽 사이드바 ===== */
+.mlog-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 내 프로필 박스 */
+.mlog-profile {
+  background: #1f1f1f;
+  border-radius: 16px;
+  padding: 20px 18px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.mlog-profile:hover {
+  background: #262626;
+  transform: translateY(-2px);
+}
+
+.mlog-username {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.mlog-profile-sub {
+  margin: 0;
+  font-size: 13px;
+  color: #b3b3b3;
+}
+
+/* 이웃 영역 */
+.mlog-friends {
+  background: #1f1f1f;
+  border-radius: 16px;
+  padding: 18px 18px 16px;
+}
+
+.mlog-friends-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.mlog-friends-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mlog-friends-manage {
+  font-size: 12px;
+  color: #4482ff;
+  text-decoration: none;
+}
+
+.mlog-friends-manage:hover {
+  text-decoration: underline;
+}
+
+.mlog-friends-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mlog-friend-item {
+  padding: 6px 0;
+  font-size: 13px;
+  color: #e4e4e4;
+  cursor: pointer;
+}
+
+.mlog-friend-item:hover {
+  color: #ffffff;
+}
+
+.mlog-friends-empty {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #8f8f8f;
+}
+
+/* ===== 오른쪽 피드 영역 ===== */
+.mlog-feed-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 헤더 */
+.mlog-feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mlog-feed-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* 피드 컨테이너 */
+#mlog-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.mlog-feed-empty {
+  font-size: 13px;
+  color: #8f8f8f;
+}
+
+/* ===== 개별 포스트 카드 ===== */
+.mlog-post {
+  background: #181818;
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+/* 왼쪽 – 글 영역 */
+.mlog-post-left {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 작성자 정보 줄 */
+.mlog-post-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+/* 아바타 (동그라미 + 이니셜) */
+.mlog-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #292929;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 이름 + 날짜 텍스트 */
+.mlog-top-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.mlog-post-username-btn {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mlog-post-username-btn:hover {
+  text-decoration: underline;
+}
+
+.mlog-post-date {
+  font-size: 12px;
+  color: #a0a0a0;
+}
+
+/* 글 본문 */
+.mlog-post-body {
+  margin-top: 4px;
+}
+
+.mlog-post-content {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e5e5e5;
+  white-space: pre-wrap;
+}
+
+/* ===== 오른쪽 – 음악 카드 ===== */
+.mlog-post-right {
+  width: 230px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* 음악 카드 전체 */
+.mlog-music-card {
+  width: 100%;
+  max-width: 220px;
+  background: #101010;
+  border-radius: 16px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+}
+
+/* 앨범 커버 */
+.mlog-music-cover {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #333333;
+}
+
+.mlog-music-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 음악 텍스트 정보 */
+.mlog-music-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.mlog-music-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.mlog-music-artist {
+  font-size: 11px;
+  color: #b3b3b3;
+}
+
+/* Spotify 버튼 (파란색 통일) */
+.mlog-music-btn {
+  border: none;
+  background: #007aff;
+  color: #ffffff;
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.mlog-music-btn:hover {
+  filter: brightness(1.05);
+}
+
+/* 버튼 / 링크 기본 스타일 재사용 가능 */
+.btn-primary {
+  border: none;
+  background: #007aff;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+}

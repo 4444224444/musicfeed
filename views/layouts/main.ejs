@@ -1,23 +1,37 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title><%= title || 'NowPlaying' %></title>
-  <link rel="stylesheet" href="/css/app.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || "My Music Feed" %></title>
+
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #141414;      /* 공통 다크모드 배경 */
+        font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+    </style>
+
+
+    <!-- 🔥 페이지별 CSS (있으면 body에서 include됨) -->
+    <% if (typeof pageCSS !== "undefined") { %>
+        <link rel="stylesheet" href="<%= pageCSS %>">
+    <% } %>
 </head>
+
 <body>
-  <!-- 여기는 헤더-->
-  <%- include('../partials/_header') %>
 
-  <!-- 여기는 페이지 내용들 -->
-  <main class="container">
-    <%- body %>
-  </main>
+    <!-- 🔥 공통 헤더 -->
+    <%- include('../partials/_header') %>
 
-  <!-- 여기는 푸터 -->
-  <footer class="footer">
-    <small>© <%= new Date().getFullYear() %> NowPlaying</small>
-  </footer>
+    <!-- 🔥 페이지별 내용 -->
+    <main>
+        <%- body %>
+    </main>
+
+
 </body>
 </html>
+

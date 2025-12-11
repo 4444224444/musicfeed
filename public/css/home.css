@@ -1,0 +1,376 @@
+html, body {
+      margin: 0;
+  padding: 0;
+    background: #141414;
+    overflow-x: hidden;
+}
+
+/* 전체 섹션 (이건 그대로 두고 싶으면 냅둬도 됨) */
+.now-playing-section {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    background: #141414;
+    color: #ffffff;
+    padding: 80px 0;
+}
+
+/* 안쪽 가로 정렬 */
+.np-inner {
+    width: 100%;
+    max-width: 1200px;   /* 너무 넓으면 벌어져 보이니까 조금 줄임 */
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 양 끝 말고 가운데 모이게 */
+    gap: 80px;               /* 원이랑 텍스트 사이 간격 */
+    padding: 0;              /* 양 옆 패딩 빼서 딱 가운데 느낌 */
+}
+
+/* 왼쪽 원형 앨범 */
+.album-art.big {
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;          /* 화면 좁아져도 원 크기 안 줄어들게 */
+}
+
+.album-art.big {
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: #d9d9d9;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;        /* 중요! 가운데 구멍용 */
+}
+
+/* 이미지도 원으로 잘라주기 */
+.album-art.big img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* 가운데 구멍 + 링 느낌 */
+.album-art.big::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;               /* 구멍 크기 */
+    height: 80px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #141414;       /* 섹션 배경색이랑 같게 → 뚫려 보이게 */
+    box-shadow:
+        0 0 0 6px rgba(255, 255, 255, 0.15),   /* 안쪽 링 */
+        0 0 0 14px rgba(0, 0, 0, 0.25);        /* 살짝 더 바깥 링 */
+}
+
+/* 오른쪽 텍스트 박스 */
+.np-right {
+    flex: 0 0 auto;
+    max-width: 420px;        /* <= 텍스트 박스 폭 줄이기 포인트 */
+}
+
+/* 제목 */
+.np-heading {
+    margin: 0 0 20px;
+    font-family: 'General Sans Variable';
+    font-size: 64px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.np-heading .now {
+    color: #007AFF;   /* 원하는 색 */
+}
+
+/* 본문 텍스트 */
+.np-body {
+    font-size: 16px;
+    font-family: 'Apple SD Gothic Neo';
+    line-height: 1.8;
+    opacity: 0.9;
+    margin-bottom: 16px;
+    max-width: 100%;         /* 폭은 np-right에 맡기면 됨 */
+}
+
+/* 트랙 정보 전체를 중앙 정렬 */
+.np-track-info {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* 트랙 제목 크게 */
+.np-track-name {
+    font-size: 28px;       /* 원하는 만큼 키워도 됨 */
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+/* 아티스트 이름 조금 작게 + 여전히 가운데 */
+.np-artist {
+    font-size: 18px;
+    opacity: 0.8;
+}
+
+.album-art.big.is-playing {
+    animation: cd-spin 18s linear infinite;
+}
+
+@keyframes cd-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/*앨범 끝*/
+
+
+
+/* 전체 섹션 */
+.global-section {
+    background: #141414;
+    color: #ffffff;
+    padding: 150px 0 80px;
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* 안쪽 애들 전체 가운데 */
+    margin-bottom: 100px;
+}
+
+/* 진짜 중앙 래퍼 */
+.global-inner {
+    width: 100%;
+    max-width: 1000px;     /* 여기에서 폭 통일 */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.global-title {
+    font-family: "General Sans Variable", system-ui, -apple-system, sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    color: #4482ff;
+    margin-bottom: 32px;
+    text-align: left;
+}
+
+.mytop-section .global-title {
+margin-left: 16rem;
+}
+
+.mytop-section {
+    margin-bottom: 100px;
+}
+
+/* 2열 그리드: 진짜 중앙 정렬 */
+.global-chart {
+    /* 폭 고정/100% 다 빼고, 그리드가 자기 내용만큼만 차지하게 */
+    width: auto;
+    min-width: 0;
+    max-width: none;
+
+    display: grid;
+    grid-template-columns: repeat(2, 480px);  /* 카드 폭 고정 (원하는 값으로 조절) */
+    column-gap: 48px;
+    row-gap: 24px;
+
+    justify-content: center;  /* 그리드 덩어리를 가운데로 */
+    margin: 0 auto;           /* 섹션 안에서 중앙 */
+}
+
+/* 카드 하나 */
+.global-card {
+    display: flex;
+    align-items: stretch;
+    background: transparent;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* 왼쪽 랭킹 + 앨범 */
+.global-card-left {
+    position: relative;
+    width: 140px;
+    background: #e5251b;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* 순위 숫자 */
+.global-rank {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    font-size: 24px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+/* 앨범 커버 이미지 */
+.global-card-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 오른쪽 박스: 141414보다 약간 밝은 회색 */
+.global-card-right {
+    flex: 1;
+    background: #1f1f1f;             /* 포인트 색 변경 */
+    padding: 18px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* 곡 제목 */
+.global-title-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 6px;
+}
+
+/* 아티스트 이름 */
+.global-artist-text {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #b3b3b3;  /* 약간 죽인 흰색 */
+}
+
+
+
+/* 아티스트 전체 섹션 */
+.artist-section {
+    padding: 120px 0 80px;
+    background: #141414;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 100px;
+}
+
+/* 섹션 타이틀 */
+.artist-title {
+    font-family: "General Sans Variable", sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    color: #4482ff;
+    margin-left: 16rem;
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+/* 그리드: 세 개가 정확히 중앙에 */
+.artist-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 360px);  /* 420px짜리 3칸 */
+    gap: 12px;
+    width: 100%;
+    max-width: none;        /* 좁게 막지 말기 */
+    margin: 0 auto;         /* 섹션 안에서 중앙 */
+    justify-content: center;/* 그리드 묶음 자체를 가운데로 */
+}
+
+
+/* 아티스트 카드 */
+.artist-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 아티스트 둥근 프로필 (크게 키움) */
+.artist-avatar {
+    width:  280px;
+    height: 280px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.artist-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 아티스트 이름 */
+.artist-name {
+    font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 16px;
+    margin-top: 6px;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+}
+
+
+/* 좁은 화면에서는 세로로 쌓이게 */
+@media (max-width: 900px) {
+    .artist-grid {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+
+
+
+
+/* 반응형: 화면 좁아지면 1열로 */
+@media (max-width: 900px) {
+    .global-chart {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .now-playing-section {
+        padding: 24px 20px;
+    }
+
+    .now-playing-section .np-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .album-art {
+        width: 140px;
+        height: 140px;
+    }
+
+    .np-title {
+        font-size: 22px;
+    }
+}
+

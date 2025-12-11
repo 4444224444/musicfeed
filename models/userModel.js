@@ -1,33 +1,37 @@
 const mongoose = require('mongoose');
 
-// 여기가 스키마 
 const userSchema = mongoose.Schema(
   {
+    // 로그인 아이디
     username: {
       type: String,
       required: [true, '아이디를 입력해주세요.'],
       unique: true,
     },
+
+    // 🔹 여기 넣기 (닉네임)
+    nickname: {
+      type: String,
+      required: [true, '사용자 이름(닉네임)을 입력해주세요.'],
+    },
+
+    // 비밀번호
     password: {
       type: String,
       required: [true, '비밀번호를 입력해주세요.'],
     },
+
     friends: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', 
+        ref: 'User',
       },
     ],
-    spotifyAccessToken: {
-      type: String,
-    },
-    spotifyRefreshToken: {
-      type: String,
-    },
+
+    spotifyAccessToken: String,
+    spotifyRefreshToken: String,
   },
-  {
-    timestamps: true, 
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('User', userSchema);

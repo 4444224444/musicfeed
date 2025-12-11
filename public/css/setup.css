@@ -1,0 +1,181 @@
+/* ======================================
+   Global Page Style
+====================================== */
+
+.settings-page {
+  max-width: 760px;
+  margin: 60px auto;
+  padding: 0 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Noto Sans KR", sans-serif;
+  color: #ffffff;
+}
+
+.settings-page h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.muted-info {
+  color: #bbbbbb;
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+/* ======================================
+   Section Card
+====================================== */
+
+.section-card {
+  background: #1b1b1d;
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  padding: 24px 26px;
+  margin-bottom: 32px;
+}
+
+.section-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.setting-detail {
+  color: #bbbbbb;
+  font-size: 14px;
+  margin-bottom: 14px;
+}
+
+/* ======================================
+   Form UI
+====================================== */
+
+.setting-form {
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  background: #141414;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #007aff;
+}
+
+/* ======================================
+   Buttons
+====================================== */
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-small {
+  padding: 8px 14px;
+}
+
+.btn-primary {
+  background: #007aff;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.15);
+}
+
+.btn-primary.btn-ghost {
+  background: transparent;
+  border: 1px solid #007aff;
+  color: #007aff;
+}
+
+.btn-primary.btn-ghost:hover {
+  background: rgba(0, 122, 255, 0.15);
+}
+
+.btn-danger {
+  background: #ff3b30;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  filter: brightness(1.15);
+}
+
+.btn-spotify {
+  background: #1db954;
+  color: #ffffff;
+}
+
+.btn-spotify:hover {
+  filter: brightness(1.1);
+}
+
+/* ======================================
+   Status Messages
+====================================== */
+
+.status-message {
+  margin-top: 6px;
+  font-size: 13px;
+  min-height: 18px;
+}
+
+.status-connected {
+  color: #1db954;
+  margin-bottom: 10px;
+}
+
+.status-disconnected {
+  color: #bbbbbb;
+  margin-bottom: 10px;
+}
+
+/* ======================================
+   Danger Zone
+====================================== */
+
+.danger-zone {
+  border: 1px solid #382424;
+  background: #1a1212;
+}
+
+.danger-zone h3 {
+  color: #ff453a;
+}
+
+.setting-item {
+  margin-top: 18px;
+}
+
+.setting-item p {
+  margin-bottom: 8px;
+  color: #bbbbbb;
+  font-size: 14px;
+}

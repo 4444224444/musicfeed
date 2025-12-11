@@ -1,0 +1,33 @@
+
+<link rel="stylesheet" href="/css/mylogdetail.css">
+
+<main
+  id="mylogDetailPage"
+  class="mylog-detail-page"
+  data-post-id="<%= postId %>"
+  data-my-user-id="<%= myUserId %>"
+>
+  <header id="postHeader">
+    <!-- JS로 채움 -->
+  </header>
+
+  <section id="postBody"></section>
+  <section id="postActions"></section>
+
+  <section id="postComments">
+    <h2>댓글</h2>
+    <ul id="commentList"></ul>
+
+    <form id="commentForm">
+      <textarea
+        id="commentInput"
+        rows="2"
+        placeholder="댓글을 입력해 달라."
+      ></textarea>
+      <button type="submit">댓글 달기</button>
+    </form>
+  </section>
+</main>
+
+<!-- 👇 맨 아래에 JS 로드 -->
+<script src="/js/mylog-detail.js"></script>

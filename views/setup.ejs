@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="/css/setup.css">
+
+<section class="settings-page">
+    <h2>SET UP & Preferences</h2>
+    <p class="muted-info">당신의 계정 정보 및 Spotify 연동 상태를 관리합니다.</p>
+
+    <div class="section-card">
+        <h3>📝 기본 정보 관리</h3>
+        <p class="setting-detail">계정 생성일: <%= user.createdAt.toLocaleDateString('ko-KR') %></p>
+        
+        <form id="update-username-form" class="setting-form">
+            <div class="form-group">
+                <label for="username">사용자 이름</label>
+                <input type="text" id="username" name="username" value="<%= user.username %>" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-small">이름 수정</button>
+            <p id="username-status" class="status-message"></p>
+        </form>
+
+        <form id="update-password-form" class="setting-form">
+            <div class="form-group">
+                <label for="current-password">현재 비밀번호</label>
+                <input type="password" id="current-password" name="currentPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="new-password">새 비밀번호</label>
+                <input type="password" id="new-password" name="newPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-small">비밀번호 변경</button>
+            <p id="password-status" class="status-message"></p>
+        </form>
+    </div>
+
+    <div class="section-card">
+        <h3>🎶 Spotify 연동 관리</h3>
+        <% if (user.spotifyAccessToken) { %>
+            <p class="status-connected">현재 Spotify와 연동되어 있습니다. (연동 해제 가능)</p>
+            <button id="disconnect-spotify" class="btn btn-danger">연동 해제</button>
+            <p id="spotify-status" class="status-message"></p>
+        <% } else { %>
+            <p class="status-disconnected">Spotify 연동이 필요합니다. 연동해야 NowPlaying 기능을 사용할 수 있습니다.</p>
+            <a href="/api/spotify/login" class="btn btn-spotify">Spotify 연동하기</a>
+        <% } %>
+    </div>
+
+    <div class="section-card danger-zone">
+        <h3>⚠️ 계정 폐쇄 및 로그아웃</h3>
+        
+        <div class="setting-item">
+            <p>현재 세션을 안전하게 종료합니다.</p>
+            <a href="#" id="logout-link" class="btn btn-primary btn-ghost">로그아웃</a>
+        </div>
+
+        <div class="setting-item">
+            <p>계정 및 모든 데이터를 영구적으로 삭제합니다. 되돌릴 수 없습니다.</p>
+            <button id="delete-account-btn" class="btn btn-danger">회원 탈퇴</button>
+        </div>
+    </div>
+</section>
+
+<script src="/js/setup.js"></script>

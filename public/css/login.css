@@ -1,0 +1,142 @@
+/* 전체 폰트 */
+* {
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, system-ui, sans-serif;
+  box-sizing: border-box;
+}
+
+/* 바탕 */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #141414;
+  color: #ffffff;
+}
+
+/* 로그인 컨테이너 */
+.auth-container {
+  max-width: 420px;
+  margin: 80px auto;
+  padding: 40px 32px;
+  background: #1b1b1b;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* 타이틀 */
+.auth-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 28px;
+  color: #007AFF;
+}
+
+/* Spotify 로그인 */
+.spotify-auth {
+  margin-bottom: 30px;
+}
+
+.spotify-title {
+  font-size: 14px;
+  color: #cccccc;
+  margin-bottom: 12px;
+}
+
+/* Spotify 버튼 */
+.btn-spotify {
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 12px;
+  background: #1DB954;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.btn-spotify:hover {
+  filter: brightness(1.12);
+}
+
+/* 구분선 */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: #333333;
+  margin: 28px 0;
+}
+
+/* 입력 그룹 */
+.form-group {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
+  color: #e5e5e5;
+}
+
+/* 입력창 */
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #2a2a2a;
+  border: 1px solid #3a3a3a;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #007AFF;
+}
+
+/* 로그인 버튼 */
+.btn-primary {
+  width: 100%;
+  padding: 13px 0;
+  border-radius: 12px;
+  border: none;
+  background: #007AFF;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+/* 에러 메시지 */
+.error-message {
+  color: #ff4f4f;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+/* 하단 링크 */
+.footer-text {
+  margin-top: 28px;
+  font-size: 13px;
+  color: #d0d0d0;
+}
+
+.footer-text a {
+  color: #007AFF;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-text a:hover {
+  text-decoration: underline;
+}

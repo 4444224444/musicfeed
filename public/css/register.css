@@ -1,0 +1,135 @@
+* {
+  font-family: "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, system-ui, sans-serif;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #141414;
+  color: #ffffff;
+}
+
+.auth-container {
+  max-width: 420px;
+  margin: 120px auto;
+  padding: 40px 32px;
+  background: #1b1b1b;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* 제목 */
+.auth-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 28px;
+  color: #007AFF;
+}
+
+/* Spotify 영역 */
+.spotify-auth {
+  margin-bottom: 30px;
+}
+
+.spotify-title {
+  font-size: 14px;
+  color: #cccccc;
+  margin-bottom: 12px;
+}
+
+.btn-spotify {
+  display: block;
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 12px;
+  background: #1DB954;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.btn-spotify:hover {
+  filter: brightness(1.12);
+}
+
+/* Divider */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: #333;
+  margin: 28px 0;
+}
+
+/* form 입력 */
+.form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  color: #eeeeee;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #2a2a2a;
+  border-radius: 12px;
+  border: 1px solid #3a3a3a;
+  color: white;
+  outline: none;
+  font-size: 14px;
+}
+
+.form-group input:focus {
+  border-color: #007AFF;
+}
+
+/* submit */
+.btn-primary {
+  width: 100%;
+  background: #007AFF;
+  padding: 13px 0;
+  border-radius: 12px;
+  border: none;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+/* 에러 */
+.error-message {
+  margin-top: 12px;
+  color: #ff4f4f;
+  font-size: 13px;
+}
+
+/* footer */
+.footer-text {
+  margin-top: 28px;
+  font-size: 13px;
+  color: #d0d0d0;
+}
+
+.footer-text a {
+  color: #007AFF;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-text a:hover {
+  text-decoration: underline;
+}
