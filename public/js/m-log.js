@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const html = logs
       .map((log) => {
         const user = log.userId || {};
-        const username = user.nickname || user.username || '알 수 없는 사용자';
+        const username = user.username || user.username || '알 수 없는 사용자';
         const userId = user._id;
         const created = log.createdAt
           ? new Date(log.createdAt).toLocaleString('ko-KR')

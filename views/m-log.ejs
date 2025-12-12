@@ -29,7 +29,7 @@
                 data-user-id="<%= friend._id %>"
               >
                 <!-- 🔥 이웃도 nickname 우선 -->
-                <span class="mlog-friend-name"><%= friend.nickname || friend.username %></span>
+                <span class="mlog-friend-name"><%= friend.username || friend.username %></span>
               </li>
             <% }) %>
           </ul>
