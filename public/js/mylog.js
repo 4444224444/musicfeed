@@ -67,10 +67,22 @@
       return;
     }
 
+    // (선택) EJS에서 data-viewed-user-name을 심어뒀다면 그걸 기본 표시명으로 활용
+    const viewedUserName =
+      root.dataset.viewedUserName || root.dataset.viewedUserName === ''
+        ? root.dataset.viewedUserName
+        : '';
+
     const html = logs
       .map((log) => {
         const t = log.track || {};
         const date = formatDate(log.createdAt);
+
+        // ✅ 작성자 표시명 (닉네임 우선, 없으면 username)
+        const author =
+          log.userId && typeof log.userId === 'object'
+            ? (log.userId.nickname || log.userId.username || viewedUserName || '알 수 없음')
+            : (viewedUserName || '알 수 없음');
 
         const title =
           log.title && log.title.trim()
@@ -88,6 +100,9 @@
               <div class="mylog-head">
                 <div class="track-info">
                   <div>
+                    <!-- ✅ 닉네임 표시 -->
+                    <div class="writer muted">${escapeHtml(author)}</div>
+
                     <div class="title">${escapeHtml(title)}</div>
                     <div class="artist muted">${escapeHtml(trackLine)}</div>
                   </div>

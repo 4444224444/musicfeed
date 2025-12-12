@@ -2,9 +2,10 @@
 <link rel="stylesheet" href="/css/mylog.css">
 
 <main
-  id="mylogPage"
+id="mylogPage"
   class="mylog-page"
   data-viewed-user-id="<%= profileUser._id %>"
+  data-viewed-user-name="<%= profileUser.nickname || profileUser.username %>"
   data-is-me="<%= isMe %>"
 >
   <% const displayName = profileUser.nickname || profileUser.username; %>
