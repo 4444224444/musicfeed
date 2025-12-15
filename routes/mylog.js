@@ -4,29 +4,27 @@ const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
 const myLogController = require('../controllers/myLogController');
 
-// 내 전체 로그 (API에서 쓰고 있을 수도 있음)
-router.get('/', protect, myLogController.getMyLogs);
+function mustFn(fn, name) {
+  if (typeof fn !== 'function') {
+    throw new Error(`myLogController.${name} is not a function (got ${typeof fn})`);
+  }
+  return fn;
+}
 
-// 유저별 로그 (지금 mylog.ejs에서 /api/mylog/user/:userId 호출 중)
-router.get('/user/:userId', protect, myLogController.getUserLogs);
+router.get('/', protect, mustFn(myLogController.getMyLogs, 'getMyLogs'));
+router.get('/user/:userId', protect, mustFn(myLogController.getUserLogs, 'getUserLogs'));
+router.get('/feed', protect, mustFn(myLogController.getFeedLogs, 'getFeedLogs'));
 
-// 피드 (M-LOG에서 쓰는 거)
-router.get('/feed', protect, myLogController.getFeedLogs);
+router.post('/', protect, mustFn(myLogController.createMyLog, 'createMyLog'));
 
-// 새 글 작성
-router.post('/', protect, myLogController.createMyLog);
+router.put('/:id', protect, mustFn(myLogController.updateMyLog, 'updateMyLog'));
+router.delete('/:id', protect, mustFn(myLogController.deleteMyLog, 'deleteMyLog'));
 
-// 글 수정 / 삭제
-router.put('/:id', protect, myLogController.updateMyLog);
-router.delete('/:id', protect, myLogController.deleteMyLog);
+router.get('/post/:id', protect, mustFn(myLogController.getMyLogDetail, 'getMyLogDetail'));
+router.get('/:id/comments', protect, mustFn(myLogController.getComments, 'getComments')); // ✅
 
-// 🔹 글 상세 (본문 + 댓글)
-router.get('/post/:id', protect, myLogController.getMyLogDetail);
-
-// 🔹 댓글 추가
-router.post('/:id/comments', protect, myLogController.addComment);
-
-// 🔹 댓글 삭제
-router.delete('/comments/:commentId', protect, myLogController.deleteComment);
+router.post('/:id/comments', protect, mustFn(myLogController.addComment, 'addComment'));
+router.delete('/comments/:commentId', protect, mustFn(myLogController.deleteComment, 'deleteComment'));
 
 module.exports = router;
+

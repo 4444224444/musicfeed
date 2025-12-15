@@ -2,7 +2,7 @@ const querystring = require('querystring');
 const axios = require('axios');
 const User = require('../models/userModel');
 
-// 🔥 글로벌 차트용 플레이리스트 (Topsify 같은 큐레이터 계정 플리)
+// 글로벌 차트 불러오기
 const GLOBAL_CHART_PLAYLIST_ID = '5iwkYfnHAGMEFLiHFFGnP4';
 const GLOBAL_CHART_TITLE = '🔥 글로벌 차트 Top 10';
 const GLOBAL_CHART_SUBTITLE = "HITS 2025 - Today's Top Songs (by Topsify)";
@@ -40,9 +40,8 @@ const MOOD_PRESETS = {
 // 기본 무드
 const DEFAULT_MOOD = 'chill';
 
-// ===============================
-// 1) 토큰 재발급
-// ===============================
+
+// 토큰 재발급!!
 const refreshSpotifyToken = async (userId) => {
   const user = await User.findById(userId);
   const refreshToken = user.spotifyRefreshToken;
@@ -72,9 +71,7 @@ const refreshSpotifyToken = async (userId) => {
   return newAccessToken;
 };
 
-// ===============================
-// 2) 연동 시작
-// ===============================
+// 스포티파이 로그인할 때 연동하는 거 
 const loginWithSpotify = (req, res) => {
   const scope = [
     'user-read-private',
@@ -100,9 +97,7 @@ const loginWithSpotify = (req, res) => {
   );
 };
 
-// ===============================
-// 3) 콜백
-// ===============================
+// 콜백
 const spotifyCallback = async (req, res) => {
   const code = req.query.code || null;
   const userId = req.query.state || null;
@@ -156,9 +151,7 @@ const spotifyCallback = async (req, res) => {
   }
 };
 
-// ===============================
-// 4) 최근 재생
-// ===============================
+// recent에 띄울 최근 재생 것들
 const getRecentTracks = async (req, res) => {
   let accessToken = req.user.spotifyAccessToken;
   const userId = req.user.id;
@@ -234,9 +227,7 @@ const getSpotifyProfile = async (req, res) => {
   }
 };
 
-// ===============================
-// 6) 현재 재생
-// ===============================
+// 실시간 재생 되는 거 띄우기
 const getCurrentlyPlaying = async (req, res) => {
   let accessToken = req.user.spotifyAccessToken;
   const userId = req.user.id;
@@ -295,9 +286,7 @@ const getCurrentlyPlaying = async (req, res) => {
   }
 };
 
-// ===============================
-// 7) Spotify 연동 해제
-// ===============================
+// 연동 해제하기
 const disconnectSpotify = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -318,9 +307,7 @@ const disconnectSpotify = async (req, res) => {
   }
 };
 
-// ===============================
-// 8) 홈 데이터
-// ===============================
+// 홈 데이터들
 const getHomepageData = async (req, res) => {
   const userId = req.user.id;
   let accessToken = req.user.spotifyAccessToken;
@@ -458,9 +445,7 @@ const getHomepageData = async (req, res) => {
   }
 };
 
-// ===============================
-// 9) 추천 플레이리스트 생성 (플리메이커용)
-// ===============================
+//여기는 플레이리스트 생성하는 곳 
 const generateMoodPlaylist = async (req, res) => {
   const userId = req.user.id;
   let accessToken = req.user.spotifyAccessToken;
@@ -614,9 +599,7 @@ const doc = await GeneratedPlaylist.create({
   }
 };
 
-// ===============================
-// 10) 내가 만든 추천 플레이리스트 목록 조회
-// ===============================
+// 플리 목록 
 const getMyGeneratedPlaylists = async (req, res) => {
   const userId = req.user.id;
 
@@ -637,9 +620,7 @@ const getMyGeneratedPlaylists = async (req, res) => {
   }
 };
 
-// ===============================
-// 11) 생성된 추천플리를 실제 Spotify 계정에 플레이리스트로 만들기
-// ===============================
+// 이 플리들을 스포티파이로 푸쉬하기
 const pushGeneratedPlaylistToSpotify = async (req, res) => {
   const userId = req.user.id;
   const docId = req.params.id;
@@ -729,10 +710,7 @@ const pushGeneratedPlaylistToSpotify = async (req, res) => {
   }
 };
 
-// ===============================
-// 12) 트랙 검색 (MY-LOG용)
-// GET /api/spotify/search?query=... 
-// ===============================
+// 노래검색하는기능
 const searchTracks = async (req, res) => {
   const userId = req.user.id;
   let accessToken = req.user.spotifyAccessToken;
@@ -820,5 +798,4 @@ module.exports = {
   generateMoodPlaylist,
   getMyGeneratedPlaylists,
   pushGeneratedPlaylistToSpotify,
-  searchTracks,      // 🔥 라우트에서 쓰는 이름
-};
+  searchTracks,   }

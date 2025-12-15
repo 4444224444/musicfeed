@@ -1,259 +1,283 @@
-  (function () {
-    // 1) 루트 엘리먼트에서 data-* 읽기
+document.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('mylogDetailPage');
   if (!root) return;
 
-    const postId = root.dataset.postId;      // EJS가 HTML에 박아준 값
-    const myUserId = root.dataset.myUserId;  // 로그인한 내 아이디
+  const postId = root.dataset.postId;
+  const myUserId = root.dataset.myUserId || '';
 
-    const headerEl = document.getElementById('postHeader');
-    const bodyEl = document.getElementById('postBody');
-    const actionsEl = document.getElementById('postActions');
-    const commentList = document.getElementById('commentList');
-    const commentForm = document.getElementById('commentForm');
-    const commentInput = document.getElementById('commentInput');
+  const postHeader = document.getElementById('postHeader');
+  const postBody = document.getElementById('postBody');
+  const postActions = document.getElementById('postActions');
 
-    let postData = null;
+  const openCommentsBtn = document.getElementById('openCommentsBtn');
+  const actionMsg = document.getElementById('actionMsg');
 
-    async function jsonFetch(url, options = {}) {
-      const res = await fetch(url, {
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options.headers || {}),
-        },
-        ...options,
-      });
+  const overlay = document.getElementById('commentOverlay');
+  const sheet = document.getElementById('commentSheet');
+  const closeCommentsBtn = document.getElementById('closeCommentsBtn');
 
-      let data = null;
-      try {
-        data = await res.json();
-      } catch (e) {
-        data = null;
-      }
+  const commentList = document.getElementById('commentList');
+  const commentForm = document.getElementById('commentForm');
+  const commentInput = document.getElementById('commentInput');
+  const commentMsg = document.getElementById('commentMsg');
 
-      if (!res.ok) {
-        const msg = data && data.message ? data.message : '요청 실패';
-        throw new Error(msg);
-      }
-      return data;
-    }
+  // ✅ 글 상세는 /post/:id 그대로 OK
+  const POST_URL = `/api/mylog/post/${postId}`;
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
+  // ✅ 댓글은 /:id/comments 가 맞다 (404 해결 포인트)
+  const COMMENTS_URL = `/api/mylog/${postId}/comments`;
 
-    function formatDate(iso) {
-      if (!iso) return '';
-      const d = new Date(iso);
-      return d.toLocaleString('ko-KR', {
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
+  let cachedPost = null;
+
+  init();
+
+  async function init() {
+    await loadPost();
+    bindSheet();
+  }
+
+  function bindSheet() {
+    if (openCommentsBtn) {
+      openCommentsBtn.addEventListener('click', async () => {
+        openSheet();
+        await loadComments();
       });
     }
 
-    async function loadPost() {
-      try {
-        const data = await jsonFetch('/api/mylog/post/' + postId);
-        postData = data;
-        renderPost();
-        renderComments();
-      } catch (err) {
-        console.error(err);
-        headerEl.innerHTML = '<p>글을 불러오는 중 오류 발생.</p>';
-      }
+    if (overlay) overlay.addEventListener('click', closeSheet);
+    if (closeCommentsBtn) closeCommentsBtn.addEventListener('click', closeSheet);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSheet();
+    });
+
+    if (commentForm) {
+      commentForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await submitComment();
+      });
+    }
+  }
+
+  function openSheet() {
+    overlay && overlay.classList.add('open');
+    sheet && sheet.classList.add('open');
+    sheet && sheet.setAttribute('aria-hidden', 'false');
+    setTimeout(() => commentInput && commentInput.focus(), 50);
+  }
+
+  function closeSheet() {
+    overlay && overlay.classList.remove('open');
+    sheet && sheet.classList.remove('open');
+    sheet && sheet.setAttribute('aria-hidden', 'true');
+    commentMsg && (commentMsg.textContent = '');
+  }
+
+  async function jsonFetch(url, options = {}) {
+    const res = await fetch(url, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      },
+      ...options,
+    });
+
+    let data = null;
+    try {
+      data = await res.json();
+    } catch (e) {
+      data = null;
     }
 
-    function renderPost() {
-      if (!postData) return;
-      const user = postData.userId || {};
-      const t = postData.track || {};
-      const isMe = String(user._id) === String(myUserId);
+    if (!res.ok) {
+      const msg = data && data.message ? data.message : '요청 실패';
+      throw new Error(msg);
+    }
+    return data;
+  }
 
-      const title =
-        postData.title && postData.title.trim()
-          ? postData.title
-          : (t.name || '제목 없음');
+  async function loadPost() {
+    if (!postHeader || !postBody) return;
 
-      headerEl.innerHTML = `
-        <h1>${escapeHtml(title)}</h1>
-        <p>작성자: ${escapeHtml(user.username || '')}</p>
-        <p>작성일: ${escapeHtml(formatDate(postData.createdAt))}</p>
-        <p>곡: ${escapeHtml(t.name || '')}${
-        t.artist ? ' · ' + escapeHtml(t.artist) : ''
-      }</p>
-      `;
+    postHeader.innerHTML = '';
+    postBody.innerHTML = '';
 
-      bodyEl.innerHTML = `
-        <p>${escapeHtml(postData.content || '')}</p>
-      `;
+    try {
+      const post = await jsonFetch(POST_URL);
+      cachedPost = post;
+      renderPost(post);
+    } catch (e) {
+      postHeader.innerHTML = `<p class="muted">불러올 수 없다.</p>`;
+      postBody.innerHTML = '';
+    }
+  }
 
-      if (isMe) {
-        actionsEl.innerHTML = `
-          <button id="editBtn" type="button">편집</button>
-          <button id="deleteBtn" type="button">삭제</button>
+  function renderPost(post) {
+    const user = post.userId || {};
+    const displayName = user.nickname || user.username || '알 수 없음';
+    const created = post.createdAt ? formatDateFull(post.createdAt) : '';
+
+    const initial = displayName.trim() ? displayName.trim().charAt(0) : '?';
+
+    const t = post.track || {};
+    const trackName = t.name || '';
+    const artist = t.artist || '';
+    const album = t.album || '';
+    const coverUrl = t.albumCover || '';
+    const spotifyUrl = t.spotifyUrl || '';
+
+    const title = (post.title || '').trim();
+    const subLine = trackName
+      ? `${trackName}${artist ? ' · ' + artist : ''}${album ? ' · ' + album : ''}`
+      : '';
+
+    postHeader.innerHTML = `
+      <div class="post-topline">
+        <div class="post-author">
+          <div class="post-avatar">${escapeHtml(initial)}</div>
+          <div class="post-author-meta">
+            <div class="post-author-name">${escapeHtml(displayName)}</div>
+            <div class="post-date">${escapeHtml(created)}</div>
+          </div>
+        </div>
+      </div>
+      <h1 class="post-title">${escapeHtml(title || '기록')}</h1>
+      ${subLine ? `<p class="post-sub">${escapeHtml(subLine)}</p>` : `<p class="post-sub"></p>`}
+    `;
+
+    const musicHtml = trackName
+      ? `
+        <aside class="post-music">
+          <div class="post-cover">
+            ${coverUrl ? `<img src="${coverUrl}" alt="${escapeHtml(trackName)}">` : ``}
+          </div>
+          <div class="post-track">
+            <div class="post-track-name">${escapeHtml(trackName)}</div>
+            <div class="post-track-artist">${escapeHtml(artist || album || '')}</div>
+          </div>
+          ${spotifyUrl ? `<button type="button" class="post-spotify-btn" data-url="${spotifyUrl}">Spotify</button>` : ``}
+        </aside>
+      `
+      : ``;
+
+    postBody.innerHTML = `
+      <div class="post-card">
+        <p class="post-content">${escapeHtml(post.content || '')}</p>
+        ${musicHtml || `<div></div>`}
+      </div>
+    `;
+
+    const spotifyBtn = postBody.querySelector('.post-spotify-btn');
+    if (spotifyBtn) {
+      spotifyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const url = spotifyBtn.dataset.url;
+        if (url) window.open(url, '_blank', 'noreferrer');
+      });
+    }
+
+    if (postActions && cachedPost?.userId?._id) {
+      const isMine = String(cachedPost.userId._id) === String(myUserId);
+      if (isMine) actionMsg && (actionMsg.textContent = '');
+    }
+  }
+
+  async function loadComments() {
+    if (!commentList) return;
+    commentList.innerHTML = `<li class="muted">불러오는 중...</li>`;
+    commentMsg && (commentMsg.textContent = '');
+
+    try {
+      const data = await jsonFetch(COMMENTS_URL);
+      const list = Array.isArray(data) ? data : [];
+      renderComments(list);
+    } catch (e) {
+      commentList.innerHTML = `<li class="muted">불러올 수 없다.</li>`;
+    }
+  }
+
+  function renderComments(list) {
+    if (!list.length) {
+      commentList.innerHTML = `<li class="muted">댓글이 없다.</li>`;
+      return;
+    }
+
+    commentList.innerHTML = list
+      .map((c) => {
+        const u = c.userId || {};
+        const name = u.nickname || u.username || '알 수 없음';
+        const time = c.createdAt ? formatDateMini(c.createdAt) : '';
+        const text = c.content || c.text || '';
+
+        return `
+          <li class="comment-item">
+            <div class="comment-meta">
+              <div class="comment-writer">${escapeHtml(name)}</div>
+              <div class="comment-time">${escapeHtml(time)}</div>
+            </div>
+            <p class="comment-text">${escapeHtml(text)}</p>
+          </li>
         `;
-        attachEditDeleteHandlers();
-      } else {
-        actionsEl.innerHTML = '';
-      }
+      })
+      .join('');
+  }
+
+  async function submitComment() {
+    if (!commentInput || !commentMsg) return;
+
+    const text = (commentInput.value || '').trim();
+    if (!text) {
+      commentMsg.textContent = '내용을 입력해 달라.';
+      return;
     }
 
-    function renderComments() {
-      if (!postData) return;
-      const comments = postData.comments || [];
+    try {
+      commentMsg.textContent = '등록 중...';
 
-      if (!comments.length) {
-        commentList.innerHTML =
-          '<li class="muted">아직 댓글이 없다.</li>';
-        return;
-      }
-
-      const html = comments
-        .map((c) => {
-          const isMine =
-            c.userId && String(c.userId._id) === String(myUserId);
-          return `
-            <li data-comment-id="${c._id}">
-              <div>
-                <strong>${escapeHtml(c.userId?.username || '')}</strong>
-                <span> (${escapeHtml(formatDate(c.createdAt))})</span>
-              </div>
-              <p>${escapeHtml(c.content || '')}</p>
-              ${
-                isMine
-                  ? '<button type="button" data-action="delete-comment">댓글 삭제</button>'
-                  : ''
-              }
-            </li>
-          `;
-        })
-        .join('');
-
-      commentList.innerHTML = html;
-    }
-
-    function attachEditDeleteHandlers() {
-      const editBtn = document.getElementById('editBtn');
-      const deleteBtn = document.getElementById('deleteBtn');
-
-      if (editBtn) editBtn.addEventListener('click', onEdit);
-      if (deleteBtn) deleteBtn.addEventListener('click', onDelete);
-    }
-
-    function onEdit() {
-      if (!postData) return;
-
-      const current = postData.content || '';
-
-      bodyEl.innerHTML = `
-        <textarea id="editContent" rows="6">${escapeHtml(
-          current
-        )}</textarea>
-        <button id="editSaveBtn" type="button">저장</button>
-        <button id="editCancelBtn" type="button">취소</button>
-      `;
-
-      const saveBtn = document.getElementById('editSaveBtn');
-      const cancelBtn = document.getElementById('editCancelBtn');
-      const editContent = document.getElementById('editContent');
-
-      saveBtn.addEventListener('click', async () => {
-        const newText = (editContent.value || '').trim();
-        if (!newText) {
-          alert('내용을 비워둘 수 없다.');
-          return;
-        }
-        try {
-          await jsonFetch('/api/mylog/' + postId, {
-            method: 'PUT',
-            body: JSON.stringify({ content: newText }),
-          });
-          postData.content = newText;
-          renderPost();
-        } catch (err) {
-          console.error(err);
-          alert(err.message || '수정 중 오류 발생.');
-        }
+      await jsonFetch(COMMENTS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ content: text }),
       });
 
-      cancelBtn.addEventListener('click', () => {
-        renderPost();
-      });
+      commentInput.value = '';
+      commentMsg.textContent = '등록 완료.';
+      setTimeout(() => (commentMsg.textContent = ''), 800);
+
+      await loadComments();
+    } catch (e) {
+      commentMsg.textContent = e.message || '등록 실패';
     }
+  }
 
-    async function onDelete() {
-      if (!confirm('정말 이 글을 삭제할까?')) return;
-      try {
-        await jsonFetch('/api/mylog/' + postId, {
-          method: 'DELETE',
-        });
-        alert('삭제 완료.');
-        window.location.href = '/m-log';
-      } catch (err) {
-        console.error(err);
-        alert(err.message || '삭제 중 오류 발생.');
-      }
-    }
-
-    // 댓글 폼
-    commentForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const text = (commentInput.value || '').trim();
-      if (!text) return;
-
-      try {
-        const newComment = await jsonFetch(
-          '/api/mylog/' + postId + '/comments',
-          {
-            method: 'POST',
-            body: JSON.stringify({ content: text }),
-          }
-        );
-
-        postData.comments = postData.comments || [];
-        postData.comments.push(newComment);
-        commentInput.value = '';
-        renderComments();
-      } catch (err) {
-        console.error(err);
-        alert(err.message || '댓글 등록 중 오류 발생.');
-      }
+  function formatDateFull(iso) {
+    const d = new Date(iso);
+    return d.toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
     });
+  }
 
-    // 댓글 삭제
-    commentList.addEventListener('click', async (e) => {
-      const btn = e.target.closest('button[data-action="delete-comment"]');
-      if (!btn) return;
-
-      const li = btn.closest('li[data-comment-id]');
-      if (!li) return;
-
-      const commentId = li.getAttribute('data-comment-id');
-      if (!confirm('댓글을 삭제할까?')) return;
-
-      try {
-        await jsonFetch('/api/mylog/comments/' + commentId, {
-          method: 'DELETE',
-        });
-        postData.comments = postData.comments.filter(
-          (c) => String(c._id) !== String(commentId)
-        );
-        renderComments();
-      } catch (err) {
-        console.error(err);
-        alert(err.message || '댓글 삭제 중 오류 발생.');
-      }
+  function formatDateMini(iso) {
+    const d = new Date(iso);
+    return d.toLocaleString('ko-KR', {
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
     });
+  }
 
-    // 초기 로드
-    loadPost();
-  })();
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+});

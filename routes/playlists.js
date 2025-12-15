@@ -47,11 +47,7 @@ router.get('/', protect, async (req, res) => {
   }
 });
 
-// ===============================
-// 2) 새 플레이리스트 생성 (장르 기반: 아티스트 → Top Tracks → 10곡)
-//    POST /api/playlists
-//    body: { name, genre }
-// ===============================
+// 플리 생성
 router.post('/', protect, async (req, res) => {
   const userId = req.user._id;
 

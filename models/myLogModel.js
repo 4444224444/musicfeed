@@ -1,7 +1,7 @@
 // server/models/myLogModel.js
 const mongoose = require('mongoose');
 
-// 🔹 댓글 서브 스키마
+// 댓글 서브 스키마
 const commentSchema = new mongoose.Schema(
   {
     userId: {
@@ -22,7 +22,7 @@ const commentSchema = new mongoose.Schema(
   { _id: true } // 댓글마다 고유 _id 필요
 );
 
-// 🔹 MY-LOG 스키마
+//  MY-LOG 스키마
 const myLogSchema = new mongoose.Schema(
   {
     userId: {
@@ -30,7 +30,7 @@ const myLogSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
-    // ✅ 글 제목 (선택)
+    // 글 제목 (선택)
     title: {
       type: String,
       trim: true,
@@ -50,7 +50,7 @@ const myLogSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    // ✅ 댓글 배열
+    // 댓글 배열
     comments: [commentSchema],
   },
   {

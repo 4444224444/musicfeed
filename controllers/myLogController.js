@@ -1,7 +1,6 @@
 // server/controllers/myLogController.js
 const MyLog = require('../models/myLogModel');
-const User = require('../models/userModel'); // ← 추가
-
+const User = require('../models/userModel');
 
 // 내 MY-LOG 전체 가져오기
 exports.getMyLogs = async (req, res) => {
@@ -18,13 +17,11 @@ exports.getMyLogs = async (req, res) => {
 };
 
 // 새 로그 작성
-// 새 로그 작성
-// 새 로그 작성
 exports.createMyLog = async (req, res) => {
   try {
     const { title, content, track } = req.body;
 
-    if (!content || !content.trim()) {
+    if (!content || !String(content).trim()) {
       return res.status(400).json({ message: '감상 내용을 입력해 달라.' });
     }
 
@@ -34,33 +31,37 @@ exports.createMyLog = async (req, res) => {
 
     const doc = await MyLog.create({
       userId: req.user._id,
-      title: title ? title.trim() : '',
-      content: content.trim(),
+      title: title ? String(title).trim() : '',
+      content: String(content).trim(),
       track: {
         id: track.id,
-        name: track.name,
-        artist: track.artist,
-        album: track.album,
+        name: track.name || '',
+        artist: track.artist || '',
+        album: track.album || '',
         albumCover: track.albumCover || null,
         spotifyUrl: track.spotifyUrl || null,
       },
       comments: [],
     });
 
-    res.status(201).json(doc);
+    const populated = await MyLog.findById(doc._id).populate(
+      'userId',
+      'username nickname'
+    );
+
+    res.status(201).json(populated);
   } catch (err) {
     console.error('MY-LOG 생성 오류:', err);
     res.status(500).json({ message: 'MY-LOG 생성 중 오류.' });
   }
 };
 
-// 본문이랑댓글보기
-// 🔹 특정 글 상세 조회 (본문 + 댓글)
+// 글 상세 조회 (본문 + 댓글)
 exports.getMyLogDetail = async (req, res) => {
   try {
     const log = await MyLog.findById(req.params.id)
       .populate('userId', 'username nickname')
-    .populate('comments.userId', 'username nickname');
+      .populate('comments.userId', 'username nickname');
 
     if (!log) {
       return res.status(404).json({ message: '글을 찾을 수 없다.' });
@@ -73,13 +74,30 @@ exports.getMyLogDetail = async (req, res) => {
   }
 };
 
+// ✅ 댓글 목록 조회 (프론트에서 필요)
+exports.getComments = async (req, res) => {
+  try {
+    const log = await MyLog.findById(req.params.id)
+      .select('comments')
+      .populate('comments.userId', 'username nickname');
 
-// 🔹 댓글 추가
+    if (!log) {
+      return res.status(404).json({ message: '글을 찾을 수 없다.' });
+    }
+
+    res.status(200).json(log.comments || []);
+  } catch (err) {
+    console.error('댓글 목록 조회 오류:', err);
+    res.status(500).json({ message: '댓글 조회 중 오류.' });
+  }
+};
+
+// 댓글 추가
 exports.addComment = async (req, res) => {
   try {
     const { content } = req.body;
 
-    if (!content || !content.trim()) {
+    if (!content || !String(content).trim()) {
       return res.status(400).json({ message: '댓글 내용을 입력해 달라.' });
     }
 
@@ -90,15 +108,17 @@ exports.addComment = async (req, res) => {
 
     log.comments.push({
       userId: req.user._id,
-      content: content.trim(),
+      content: String(content).trim(),
     });
 
     await log.save();
 
-    // 방금 추가된 댓글만 populate 해서 반환
-   const populated = await log.populate('comments.userId', 'username nickname');
-    const lastComment = populated.comments[populated.comments.length - 1];
+    const populated = await MyLog.findById(log._id).populate(
+      'comments.userId',
+      'username nickname'
+    );
 
+    const lastComment = populated.comments[populated.comments.length - 1];
     res.status(201).json(lastComment);
   } catch (err) {
     console.error('댓글 추가 오류:', err);
@@ -106,9 +126,7 @@ exports.addComment = async (req, res) => {
   }
 };
 
-
-
-// 🔹 댓글 삭제 (본인 댓글만)
+// 댓글 삭제 (본인 댓글만)
 exports.deleteComment = async (req, res) => {
   try {
     const { commentId } = req.params;
@@ -124,11 +142,11 @@ exports.deleteComment = async (req, res) => {
         .json({ message: '댓글을 찾을 수 없거나 권한이 없다.' });
     }
 
-    log.comments = log.comments.filter(
+    log.comments = (log.comments || []).filter(
       (c) => String(c._id) !== String(commentId)
     );
-    await log.save();
 
+    await log.save();
     res.status(200).json({ ok: true });
   } catch (err) {
     console.error('댓글 삭제 오류:', err);
@@ -136,22 +154,22 @@ exports.deleteComment = async (req, res) => {
   }
 };
 
-
-
-
-// 로그 수정 (감상평, 필요하면 곡도 바꿀 수 있게)
+// 로그 수정 (감상평/곡)
 exports.updateMyLog = async (req, res) => {
   try {
-    const { content, track } = req.body;
+    const { title, content, track } = req.body;
 
     const update = {};
-    if (content !== undefined) update.content = content.trim();
+
+    if (title !== undefined) update.title = String(title).trim();
+    if (content !== undefined) update.content = String(content).trim();
+
     if (track && track.id) {
       update.track = {
         id: track.id,
-        name: track.name,
-        artist: track.artist,
-        album: track.album,
+        name: track.name || '',
+        artist: track.artist || '',
+        album: track.album || '',
         albumCover: track.albumCover || null,
         spotifyUrl: track.spotifyUrl || null,
       };
@@ -161,7 +179,7 @@ exports.updateMyLog = async (req, res) => {
       { _id: req.params.id, userId: req.user._id },
       update,
       { new: true }
-    );
+    ).populate('userId', 'username nickname');
 
     if (!updated) {
       return res.status(404).json({ message: '로그를 찾을 수 없다.' });
@@ -193,16 +211,14 @@ exports.deleteMyLog = async (req, res) => {
   }
 };
 
+// 피드 (나 + 친구들)
 exports.getFeedLogs = async (req, res) => {
   try {
-    // 1) 내 친구 목록 가져오기
     const me = await User.findById(req.user._id).select('friends');
     const friendIds = me?.friends || [];
 
-    // 나 자신 + 친구들
     const targetIds = [req.user._id, ...friendIds];
 
-    // 2) 해당 유저들의 로그 찾기
     const logs = await MyLog.find({ userId: { $in: targetIds } })
       .sort({ createdAt: -1 })
       .populate('userId', 'username nickname');

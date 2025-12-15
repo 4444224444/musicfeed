@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema(
       unique: true,
     },
 
-    // 🔹 여기 넣기 (닉네임)
+    // 닉넴
     nickname: {
       type: String,
       required: [true, '사용자 이름(닉네임)을 입력해주세요.'],

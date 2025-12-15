@@ -21,8 +21,6 @@ const generatedPlaylistSchema = new mongoose.Schema({
 
   title: { type: String, required: true },
   description: { type: String },
-
-  // 🔵 여기
   coverImage: {
     type: String, // base64 dataURL 또는 일반 URL
   },

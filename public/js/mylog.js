@@ -58,65 +58,61 @@
   }
 
   // ============ 로그 렌더 (목록 요약만) ============
-  function renderLogs() {
-    if (!mylogList) return;
+function renderLogs() {
+  if (!mylogList) return;
 
-    if (!logs.length) {
-      mylogList.innerHTML =
-        '<li class="muted empty">아직 남긴 기록이 없다.</li>';
-      return;
-    }
-
-    // (선택) EJS에서 data-viewed-user-name을 심어뒀다면 그걸 기본 표시명으로 활용
-    const viewedUserName =
-      root.dataset.viewedUserName || root.dataset.viewedUserName === ''
-        ? root.dataset.viewedUserName
-        : '';
-
-    const html = logs
-      .map((log) => {
-        const t = log.track || {};
-        const date = formatDate(log.createdAt);
-
-        // ✅ 작성자 표시명 (닉네임 우선, 없으면 username)
-        const author =
-          log.userId && typeof log.userId === 'object'
-            ? (log.userId.nickname || log.userId.username || viewedUserName || '알 수 없음')
-            : (viewedUserName || '알 수 없음');
-
-        const title =
-          log.title && log.title.trim()
-            ? log.title
-            : t.name || '제목 없음';
-
-        const artist = t.artist || '';
-        const trackLine = t.name
-          ? `${t.name}${artist ? ' · ' + artist : ''}`
-          : artist || '';
-
-        return `
-          <li class="mylog-item" data-id="${log._id}">
-            <a href="/mylog/post/${log._id}" class="mylog-link">
-              <div class="mylog-head">
-                <div class="track-info">
-                  <div>
-                    <!-- ✅ 닉네임 표시 -->
-                    <div class="writer muted">${escapeHtml(author)}</div>
-
-                    <div class="title">${escapeHtml(title)}</div>
-                    <div class="artist muted">${escapeHtml(trackLine)}</div>
-                  </div>
-                </div>
-                <div class="meta muted">${escapeHtml(date)}</div>
-              </div>
-            </a>
-          </li>
-        `;
-      })
-      .join('');
-
-    mylogList.innerHTML = html;
+  if (!logs.length) {
+    mylogList.innerHTML =
+      '<li class="muted empty">아직 남긴 기록이 없다.</li>';
+    return;
   }
+
+  const viewedUserName =
+    root.dataset.viewedUserName || '알 수 없음';
+
+  const html = logs.map((log) => {
+    const t = log.track || {};
+    const date = formatDate(log.createdAt);
+
+    const author =
+      log.userId && typeof log.userId === 'object'
+        ? (log.userId.nickname || log.userId.username || viewedUserName)
+        : viewedUserName;
+
+    const contentPreview = (log.content || '').trim();
+    const trackLine = t.name
+      ? `${t.name}${t.artist ? ' · ' + t.artist : ''}`
+      : '';
+
+    return `
+      <li class="mylog-item">
+        <a href="/mylog/post/${log._id}" class="mylog-link">
+          <div class="mylog-head">
+            <div class="track-info">
+              <div class="writer">${escapeHtml(author)}</div>
+
+              <!-- ✅ 본문 -->
+              <div class="title">
+                ${escapeHtml(contentPreview)}
+              </div>
+
+              <!-- ✅ 노래는 있으면 보조 정보 -->
+              ${
+                trackLine
+                  ? `<div class="artist">${escapeHtml(trackLine)}</div>`
+                  : ''
+              }
+            </div>
+
+            <div class="meta">${escapeHtml(date)}</div>
+          </div>
+        </a>
+      </li>
+    `;
+  }).join('');
+
+  mylogList.innerHTML = html;
+}
 
   // ============ 로그 로드 ============
   async function loadLogs() {

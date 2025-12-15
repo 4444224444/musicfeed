@@ -1,294 +1,413 @@
-/* =========================================================
-   RESET & BASE
-========================================================= */
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #141414;
-  color: #ffffff;
-  font-family: "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, system-ui, sans-serif;
+.mylog-page{
+  min-height:100vh;
+  padding:90px 10px 24px;
+  background:#141414;
+  color:#fff;
+  font-family:"Apple SD Gothic Neo",-apple-system,BlinkMacSystemFont,"SF Pro Display","Noto Sans KR","Malgun Gothic",sans-serif;
 }
 
-.muted {
-  color: #9e9e9e;
+.mylog-header{
+  max-width:1200px;
+  margin:0 auto 26px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
 }
 
-/* =========================================================
-   PAGE LAYOUT
-========================================================= */
-.mylog-page {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 70px 32px 120px;
-  box-sizing: border-box;
+.mylog-profile-box{
+  background:transparent;
+  border-radius:0;
+  padding:0;
+  flex:1;
+  min-width:0;
 }
 
-/* =========================================================
-   HEADER (프로필 영역)
-========================================================= */
-.mylog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 36px;
+.mylog-profile-name{
+  font-size:36px;
+  font-weight:700;
+  line-height:1.08;
+  margin:0 0 10px;
+  color:#4482ff;
+  letter-spacing:0.01em;
 }
 
-.mylog-profile-name {
-  font-size: 28px;
-  font-weight: 700;
+.mylog-profile-sub{
+  font-size:18px;
+  color:#d0d0d0;
+  line-height:1.35;
+  margin:0;
 }
 
-.mylog-profile-sub {
-  margin-top: 6px;
-  font-size: 13px;
-  color: #bfbfbf;
+.mylog-compose-toggle{
+  height:40px;
+  padding:0 18px;
+  border-radius:999px;
+  border:none;
+  background:#4482ff;
+  color:#ffffff;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:0.01em;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.mylog-compose-toggle:hover{filter:brightness(1.1);}
+
+.mylog-list-section{
+  max-width:1200px;
+  margin:0 auto;
 }
 
-/* 버튼 */
-.mylog-compose-toggle {
-  background: #007aff;
-  border: none;
-  color: #ffffff;
-  padding: 9px 18px;
-  font-size: 13px;
-  border-radius: 999px;
-  cursor: pointer;
+.mylog-list-title{
+  margin:0 0 14px;
+  font-size:18px;
+  font-weight:600;
+  color:#d0d0d0;
+  letter-spacing:0.01em;
+  text-transform:none;
 }
 
-.mylog-compose-toggle:hover {
-  filter: brightness(1.1);
+#mylogList{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
 
-/* =========================================================
-   LOG LIST
-========================================================= */
-.mylog-list-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #dcdcdc;
-  margin-bottom: 14px;
+.mylog-item{
+  background:#1f1f1f;
+  border-radius:10px;
+  overflow:hidden;
 }
 
-/* UL */
-#mylogList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.mylog-link{
+  display:block;
+  padding:14px 16px;
+  text-decoration:none;
+  color:inherit;
 }
 
-/* 기록 카드 */
-.mylog-item {
-  background: #1a1a1a;
-  border-radius: 18px;
-  padding: 16px 18px 14px;
-  transition: 0.16s ease;
-  cursor: pointer;
+.mylog-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
 }
 
-.mylog-item:hover {
-  background: #1f1f1f;
+.track-info{min-width:0;}
+
+.writer{
+  font-size:12px;
+  font-weight:600;
+  color:#9c9c9c;
+  margin-bottom:6px;
 }
 
-.mylog-link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
+.title{
+  font-size:18px;
+  font-weight:600;
+  line-height:1.25;
+  color:#c8c8c8;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
-.mylog-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+.artist{
+  font-size:14px;
+  color:#9c9c9c;
+  margin-top:6px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 
-.mylog-head .title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 3px;
+.meta{
+  font-size:12px;
+  color:#8f8f8f;
+  white-space:nowrap;
+  flex:0 0 auto;
+  padding-left:6px;
+  margin-top:2px;
 }
 
-.mylog-head .artist {
-  font-size: 13px;
+.muted{color:#8f8f8f;}
+.empty{
+  background:#1f1f1f;
+  border-radius:10px;
+  padding:16px;
 }
 
-.mylog-head .meta {
-  font-size: 12px;
-  color: #8c8c8c;
+/* ===== overlay ===== */
+.mylog-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease;
+  z-index:40;
+  font-family:"Apple SD Gothic Neo","AppleSDGothicNeo",-apple-system,BlinkMacSystemFont,
+    "Helvetica Neue",Arial,"Noto Sans KR","Malgun Gothic",sans-serif;
+}
+.mylog-overlay.open{
+  opacity:1;
+  pointer-events:auto;
 }
 
-/* =========================================================
-   COMPOSE PANEL (작성 패널)
-========================================================= */
-.mylog-compose {
-  background: #1a1a1a;
-  border-radius: 22px;
-  padding: 24px 22px 28px;
-  margin-top: 40px;
-  display: none;
+/* ===== compose bottom sheet ===== */
+.mylog-compose{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+
+  height:80vh;
+  max-height:80vh;
+
+  background:#e0e0e0;
+  border-radius:16px 16px 0 0;
+  transform:translateY(100%);
+  transition:transform .25s ease;
+  z-index:41;
+
+  padding:32px 36px;
+  box-sizing:border-box;
 }
 
-.mylog-compose.open {
-  display: block;
+.mylog-compose.open{transform:translateY(0);}
+
+.mylog-compose-inner{
+  max-width:1100px;
+  width:100%;
+  margin:0 auto;
+
+  height:100%;
+  overflow-y:auto;
+
+  display:flex;
+  flex-direction:column;
+  gap:20px;
 }
 
-.compose-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+.compose-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
 }
 
-.compose-header h2 {
-  font-size: 17px;
-  margin: 0;
-  font-weight: 600;
+.compose-header h2{
+  margin:0;
+  font-size:22px;
+  font-weight:700;
+  color:#141414;
+  letter-spacing:0.01em;
 }
 
-.close-btn {
-  background: transparent;
-  border: none;
-  color: #c5c5c5;
-  cursor: pointer;
-  font-size: 14px;
+.close-btn{
+  border:none;
+  background:transparent;
+  color:#141414;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  padding:0;
+  height:auto;
 }
 
-.close-btn:hover {
-  color: #ffffff;
+.form-row{margin-top:0;}
+
+.form-row input,
+.form-row textarea,
+.search-row input{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px 16px;
+  border-radius:999px;
+  border:none;
+  outline:none;
+  font-size:13px;
+  color:#141414;
+  background:#ffffff;
 }
 
-/* =========================================================
-   INPUTS / TEXTAREA
-========================================================= */
-.form-row {
-  margin-bottom: 12px;
+.form-row textarea{
+  min-height:180px;
+  line-height:1.55;
+  border-radius:16px;
+  resize:none;
 }
 
-input,
-textarea {
-  width: 100%;
-  border: none;
-  outline: none;
-  border-radius: 14px;
-  padding: 12px;
-  box-sizing: border-box;
-  font-size: 14px;
-  background: #101010;
-  color: #ffffff;
+.search-row{
+  display:grid;
+  grid-template-columns:1fr 110px;
+  gap:12px;
+  align-items:center;
 }
 
-textarea {
-  resize: none;
-  min-height: 110px;
+#searchBtn{
+  height:44px;
+  border-radius:999px;
+  border:none;
+  background:#4482ff;
+  color:#ffffff;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
 }
+#searchBtn:hover{filter:brightness(1.1);}
 
-/* =========================================================
-   SEARCH
-========================================================= */
-.search-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.search-row button {
-  background: #2e2e2e;
-  border: none;
-  color: #ffffff;
-  padding: 12px 16px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.search-row button:hover {
-  background: #3a3a3a;
-}
-
-.mylog-msg {
-  font-size: 12px;
-  color: #b3b3b3;
+.mylog-msg{
+  margin:0;
+  font-size:13px;
+  color:#555;
+  min-height:14px;
 }
 
 /* 검색 결과 */
-.mylog-search-results {
-  background: #101010;
-  border-radius: 14px;
-  overflow: hidden;
-  max-height: 220px;
-  overflow-y: auto;
-  margin-top: 10px;
-  display: none;
+.mylog-search-results{
+  list-style:none;
+  padding:0;
+  margin:4px 0 0;     /* 위쪽 살짝 띄우기 */
+  display:flex;
+  flex-direction:column;
+  gap: 10px;           /* ← 이게 핵심: 기존 10px → 14px */
 }
 
-.search-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  cursor: pointer;
+.search-item{
+  display:grid;
+  grid-template-columns:44px 1fr auto;
+  align-items:center;
+  background:#ffffff;
+  border-radius:12px;
+  padding:10px 12px;
+  margin-bottom: 10px;
 }
 
-.search-item:hover {
-  background: #1d1d1d;
+.search-item .cover{
+  width:44px;
+  height:44px;
+  border-radius:10px;
+  object-fit:cover;
+  background:#b3b3b3;
 }
 
-.search-item img.cover {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  object-fit: cover;
+.search-item .info{min-width:0;}
+
+.search-item .title{
+  font-size:13px;
+  font-weight:600;
+  color:#2b2b2b;
+  margin:0;
 }
 
-.search-item .title {
-  font-size: 14px;
-  font-weight: 600;
+.search-item .artist{
+  font-size:12px;
+  color:#6b6b6b;
+  margin-top:3px;
 }
 
-.search-item .artist {
-  font-size: 12px;
+.btn.small.ghost{
+  height:34px;
+  padding:0 12px;
+  border-radius:999px;
+  border:none;
+  background:#b3b3b3;
+  color:#141414;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+.btn.small.ghost:hover{filter:brightness(1.05);}
+
+/* 선택된 곡: 검색 전 기본 숨김 */
+#selectedTrackBox{display:none;}
+
+.selected-track{
+  margin-top:6px;
+  background:#d0d0d0;
+  border-radius:16px;
+  padding:12px 14px;
 }
 
-/* =========================================================
-   SELECTED TRACK
-========================================================= */
-.selected-track {
-  background: #101010;
-  border-radius: 14px;
-  padding: 10px 12px;
-  display: none;
-  margin-bottom: 12px;
+.selected-track-inner{
+  display:flex;
+  align-items:center;
+  gap:14px;
 }
 
-.selected-track-inner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+#selCover{
+  width:56px;
+  height:56px;
+  border-radius:10px;
+  object-fit:cover;
+  background:#b3b3b3;
 }
 
-.selected-track-inner img {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  object-fit: cover;
+#selTitle{
+  font-size:15px;
+  font-weight:600;
+  color:#141414;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-/* =========================================================
-   BUTTONS
-========================================================= */
-.btn-primary {
-  background: #007aff;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 999px;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
+#selArtist{
+  font-size:13px;
+  color:#555;
+  margin-top:4px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.btn-primary:hover {
-  filter: brightness(1.08);
+.form-actions{
+  margin-top:0;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
+
+.btn-primary{
+  height:40px;
+  padding:0 18px;
+  border-radius:999px;
+  border:none;
+  background:#4482ff;
+  color:#ffffff;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+.btn-primary:hover{filter:brightness(1.1);}
+
+@media (max-width:980px){
+  .mylog-header{
+    flex-direction:row;
+    align-items:flex-end;
+  }
+
+  .mylog-profile-name{font-size:32px;}
+  .mylog-profile-sub{font-size:16px;}
+
+  .mylog-compose{
+    padding:28px 20px;
+  }
+
+  .mylog-compose-inner{
+    max-width:100%;
+  }
+
+  .search-row{
+    grid-template-columns:1fr 92px;
+  }
 }
